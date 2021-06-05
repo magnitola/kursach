@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>News - LOCKED</title>
+    <link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cookie">
+    <link rel="stylesheet" href="/static/news/css/Pretty-Header.css">
+    <link rel="stylesheet" href="/static/news/css/styles.css">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<nav class="navbar navbar-light navbar-expand-md custom-header">
+    <div class="container-fluid">
+        <div><a class="navbar-brand" href="#">LOCKED</a>
+            <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navbar-collapse"><span
+                    class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+        </div>
+        <div class="collapse navbar-collapse justify-content-end" id="navbar-collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link text-white" href="#">Add news</a></li>
+                <li class="nav-item"></li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false"
+                                                 data-bs-toggle="dropdown" href="#"> <img class="dropdown-image"
+                                                                                          src="/static/news/img/avatar.jpg"></a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" href="#">Settings </a>
+                        <a class="dropdown-item" href="#">Payments </a>
+                        <a class="dropdown-item" href="#">Logout </a></div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container mt-3">
+    <div class="row flex-lg-row flex-column justify-content-center">
+        <div class="col col-lg-8 m-2">
+            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                <div class="col p-4 d-flex flex-column position-static">
+                    <strong class="d-inline-block mb-2 text-primary">Мир</strong>
+                    <h3 class="mb-0">Рекомендуемый пост</h3>
+                    <div class="mb-1 text-muted">12 Ноября</div>
+                    <p class="card-text mb-auto">Это более широкая карточка с вспомогательным текстом ниже в качестве
+                        естественного перехода к дополнительному контенту.</p>
+                    <a href="#" class="stretched-link">Продолжить чтение</a>
+                </div>
+                <div class="col-auto d-none d-lg-block">
+                    <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
+                         role="img" aria-label="Placeholder: Эскиз" preserveAspectRatio="xMidYMid slice"
+                         focusable="false"><title>Placeholder</title>
+                        <rect width="100%" height="100%" fill="#55595c"></rect>
+                    </svg>
+
+                </div>
+            </div>
+
+
+            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                <div class="col p-4 d-flex flex-column position-static">
+                    <strong class="d-inline-block mb-2 text-primary">Мир</strong>
+                    <h3 class="mb-0">Рекомендуемый пост</h3>
+                    <div class="mb-1 text-muted">12 Ноября</div>
+                    <p class="card-text mb-auto">Это более широкая карточка с вспомогательным текстом ниже в качестве
+                        естественного перехода к дополнительному контенту.</p>
+                    <a href="#" class="stretched-link">Продолжить чтение</a>
+                </div>
+                <div class="col-auto d-none d-lg-block">
+                    <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
+                         role="img" aria-label="Placeholder: Эскиз" preserveAspectRatio="xMidYMid slice"
+                         focusable="false"><title>Placeholder</title>
+                        <rect width="100%" height="100%" fill="#55595c"></rect>
+                    </svg>
+
+                </div>
+            </div>
+
+            <!-- ПАГИНАЦИЯ -->
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">First</a></li>
+                    <li class="page-item disabled"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Last</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+
+
+        <div class="col col-lg-3 m-2">
+            <div class="row">
+                <div class="col params">
+                    <div class="row">
+                        <div class="col">
+                            <p class="title">Filters</p>
+                            <ul class="list-group">
+                                <li class="list-group-item about"><span><input class="form-control" data-date-format="dd/mm/yyyy" id="datepicker" readonly style="width: 100%;"></span></li>
+                                <li class="list-group-item about"><span><input class="form-control" id="exampleInputEmail1" placeholder="Search" style="width: 100%;"></span></li>
+                                <li class="list-group-item about"><span>Sort by views</span></li>
+                                <li class="list-group-item about"><span>Sort by time</span></li>
+                                <li class="list-group-item about"><span>Sort by likes</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col params">
+                    <div class="row">
+                        <div class="col">
+                            <p class="title">Tags</p>
+                            <ul class="list-group">
+                                <li class="list-group-item about"><span>Web programming</span></li>
+                                <li class="list-group-item about"><span>Java Script</span></li>
+                                <li class="list-group-item about"><span>Node JS</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+</body>
+<script type="text/javascript">
+    $(document).ready(() => {
+    $('#datepicker').datepicker({
+        weekStart: 1,
+        daysOfWeekHighlighted: "6,0",
+        autoclose: true,
+        todayHighlight: true,
+    });
+    $('#datepicker').datepicker("setDate", new Date());
+        });
+</script>
+</html>

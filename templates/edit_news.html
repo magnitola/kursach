@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>News - LOCKED</title>
+    <link href="https://code.jquery.com/ui/1.12.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cookie">
+    <link rel="stylesheet" href="/static/news/css/Pretty-Header.css">
+    <link rel="stylesheet" href="/static/news/css/styles.css">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<nav class="navbar navbar-light navbar-expand-md custom-header">
+    <div class="container-fluid">
+        <div><a class="navbar-brand" href="#">LOCKED</a>
+            <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navbar-collapse"><span
+                    class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+        </div>
+        <div class="collapse navbar-collapse justify-content-end" id="navbar-collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link text-white" href="#">Add news</a></li>
+                <li class="nav-item"></li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false"
+                                                 data-bs-toggle="dropdown" href="#"> <img class="dropdown-image"
+                                                                                          src="/static/news/img/avatar.jpg"></a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" href="#">Settings </a>
+                        <a class="dropdown-item" href="#">Payments </a>
+                        <a class="dropdown-item" href="#">Logout </a></div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container mt-3">
+    <div class="row flex-lg-row flex-column justify-content-center">
+        <div class="col col-lg-8 m-2">
+            <form>
+                <div class="form-group">
+                    <h4 class="mb-2">Photo news</h4>
+                    <input type="file" class="mb-4 form-control-file" id="news_logo" accept=".jpg, .jpeg, .png" required>
+                    <h4 class="mb-2">News Title</h4>
+                    <input class="form-control is-invalid" type="text" placeholder="My news title" id="news_title" required autocomplete="off">
+                    <div class="invalid-feedback">
+                        PARASHA, PEREDELIVAY
+                    </div>
+                    <div class="mb-4"></div>
+                    <h4 class="mb-2">News Text</h4>
+                    <textarea class="mb-4 form-control" rows="15" id="news_text" required autocomplete="off"></textarea>
+                    <button type="submit" class="btn btn-primary submit">Submit</button>
+                </div>
+            </form>
+        </div>
+
+
+
+        <div class="col col-lg-3 m-2">
+
+            <div class="row">
+                <div class="col params">
+                    <div class="row">
+                        <div class="col">
+                            <p class="title">Tags</p>
+                            <ul class="list-group list_tags">
+                                <li class="list-group-item about" id="li1"><span><input type="text" class="form-control-plaintext tag" id="tags"></span></li>
+                                <li class="list-group-item about" id="li2"><span><input type="text" class="form-control-plaintext tag" id="tags"></span></li>
+                                <li class="list-group-item about" id="li3"><span><input type="text" class="form-control-plaintext tag" id="tags"></span></li>
+                                <li class="list-group-item about" id="li4"><span><input type="text" class="form-control-plaintext tag" id="tags"></span></li>
+                                <li class="list-group-item about" id="li5"><span><input type="text" class="form-control-plaintext tag" id="tags"></span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+</body>
+<script type="text/javascript">
+$(document).ready(() => {
+    // let count_tags = 1;
+//
+    // $(".tag").on("change", function (event) {
+    //     let all_filled = true;
+    //     for (let i = 1; i <= count_tags; i++) {
+    //         if ($("#tag"+i.toString()).val() === '') {
+    //             all_filled = false;
+    //         }
+    //     }
+    //     if (all_filled) {
+    //
+    //     }
+    // });
+    var availableTags = [
+      "ActionScript",
+      "AppleScript",
+      "Asp",
+      "BASIC",
+      "C",
+      "C++",
+      "Clojure",
+      "COBOL",
+      "ColdFusion",
+      "Erlang",
+      "Fortran",
+      "Groovy",
+      "Haskell",
+      "Java",
+      "JavaScript",
+      "Lisp",
+      "Perl",
+      "PHP",
+      "Python",
+      "Ruby",
+      "Scala",
+      "Scheme"
+    ];
+    $( ".tag" ).autocomplete({
+      source: availableTags
+    });
+
+});
+</script>
+</html>

@@ -1,0 +1,110 @@
+.title {
+  font-size: 20px;
+  color: white;
+  padding-left: inherit;
+}
+
+.params {
+  background: gray;
+  padding: 20px 20px 40px 20px;
+  margin-bottom: 30px;
+}
+
+.about {
+  background-color: darkgray;
+  color: white;
+}
+
+.content-hero-image {
+  max-width: 100%;
+}
+
+.news_text {
+  font-family: 'Comfortaa', cursive;
+}
+
+.main img {
+	max-width:60px;
+}
+
+.media img {
+    border-radius: 5px;
+}
+
+
+.main {
+    padding: 18px 20px;
+    justify-content: center;
+}
+
+@media (min-width: 576px) {
+  .main {
+    padding: 36px 42px;
+  }
+}
+
+.content h2 {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 40px 0 24px;
+}
+
+.content h2 span:before {
+  content: '#';
+  font-weight: normal;
+}
+
+.content h2 span {
+  color: var(--primary);
+}
+
+.content figure {
+  display: block;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.content figcaption {
+  font-size: 12px;
+  padding-top: 5px;
+}
+
+.content div.dropdown {
+  margin: 40px auto;
+  width: 132px;
+}
+
+.content blockquote p {
+  font-size: 14px;
+  padding: 15px 20px;
+  border-left: 3px solid #edecf2;
+  background-color: white;
+}
+
+
+
+
+.submit {
+    border-radius: 50px;
+    color: darkgray;
+    background-color: #fff;
+    padding: 8px 40px;
+    cursor: pointer;
+    border: 2px solid darkgray !important;
+
+  display: flex;
+  margin: 0px auto;
+}
+
+.submit:hover {
+    color: #fff;
+    background-color: gray;
+}
+
+.tag {
+  color: white;
+}
+
+::selection {background: #676767; color:#fff;}
+::-moz-selection {background: #676767; color:#fff;}
+::-webkit-selection {background: #676767; color:#fff;}
