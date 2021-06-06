@@ -88,15 +88,11 @@
             <!-- ПАГИНАЦИЯ -->
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">First</a></li>
-                    <li class="page-item disabled"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Last</a>
-                    </li>
+                    <li class="page-item active" id="pagin_left"><a class="page-link" tabindex="-1">First</a></li>
+                    <li class="page-item active" id="pagin_first"><a class="page-link">1</a></li>
                 </ul>
             </nav>
+            <!-- КОНЕЦ ПАГИНАЦИИ -->
         </div>
 
 
@@ -139,48 +135,112 @@
 <script src="/static/bootstrap/js/bootstrap.min.js"></script>
 </body>
 <script type="text/javascript">
+let current_page = 1;
+let count_posts_on_page = 5;
+let count_all_posts = 16;
+let max_page = Math.ceil(count_all_posts / count_posts_on_page);
+
+if (max_page >= 2)
+    $('.pagination').append('<li class="page-item" id="pagin_second"><a class="page-link">2</a></li>');
+if (max_page >= 3)
+    $('.pagination').append('<li class="page-item" id="pagin_third"><a class="page-link">3</a></li>');
+$('.pagination').append('<li class="page-item" id="pagin_right"><a class="page-link">Last</a></li>');
+if (max_page === 1)
+    $('#pagin_right').addClass('active');
+
 $(document).ready(() => {
-        $('#datepicker').datepicker({
-            weekStart: 1,
-            daysOfWeekHighlighted: "6,0",
-            autoclose: true,
-            todayHighlight: true,
-        });
-        $('#datepicker').datepicker("setDate", new Date());
+    $('#datepicker').datepicker({
+        weekStart: 1,
+        daysOfWeekHighlighted: "6,0",
+        autoclose: true,
+        todayHighlight: true,
+    });
+    $('#datepicker').datepicker("setDate", new Date());
 
-        // Скрипт обработки нажатий на сортировку
-        let sort = 'views';
-        $('.sort').click(function () {
-            if ($(this).hasClass('about-passive')) {
-                $(this).removeClass('about-passive');
-                $(this).addClass('about-active');
-                sort = $(this).attr('id');
+    // Скрипт обработки нажатий на сортировку
+    let sort = 'views';
+    $('.sort').click(function () {
+        if ($(this).hasClass('about-passive')) {
+            $(this).removeClass('about-passive');
+            $(this).addClass('about-active');
+            sort = $(this).attr('id');
+        }
+        let this_elem = $(this);
+        $('.sort').each(function (i, elem) {
+            if (!$(this).is(this_elem) && $(this).hasClass('about-active')) {
+                $(this).addClass('about-passive');
+                $(this).removeClass('about-active');
             }
-            let this_elem = $(this);
-            $('.sort').each(function (i, elem) {
-                if (!$(this).is(this_elem) && $(this).hasClass('about-active')) {
-                    $(this).addClass('about-passive');
-                    $(this).removeClass('about-active');
-                }
-            });
         });
+    });
 
-        // Скрипт обработки нажатий на теги
-        let tags = [];
-        $('.tags').click(function () {
-            if ($(this).hasClass('about-passive')) {
-                $(this).removeClass('about-passive');
-                $(this).addClass('about-active');
-                tags.push($(this).attr('id'));
+    // Скрипт обработки нажатий на теги
+    let tags = [];
+    $('.tags').click(function () {
+        if ($(this).hasClass('about-passive')) {
+            $(this).removeClass('about-passive');
+            $(this).addClass('about-active');
+            tags.push($(this).attr('id'));
+        }
+        else {
+            $(this).removeClass('about-active');
+            $(this).addClass('about-passive');
+            let this_tag = $(this).attr('id');
+            tags.splice(tags.indexOf(this_tag), 1);
+        }
+    });
+
+    // Обработка пагинации
+    $('.page-item').click(function () {
+        let elem = $(this);
+        current_page = Number(elem.text());
+        if (!elem.hasClass('active')) {
+            $('.page-item').each(function (i, elem) {
+                $(this).removeClass('active');
+            });
+            if (elem.attr('id') === 'pagin_left') {
+                current_page = 1;
+                $('#pagin_left').addClass('active');
+                $('#pagin_first').addClass('active');
+                set_text_pagin(1, 2, 3);
+            }
+            else if (elem.attr('id') === 'pagin_right') {
+                $('#pagin_right').addClass('active');
+                current_page = max_page;
+                if (current_page === 2)
+                    $('#pagin_second').addClass('active');
+                else
+                    $('#pagin_third').addClass('active');
+                if (max_page > 3)
+                    set_text_pagin(current_page - 2, current_page - 1, current_page);
+            }
+            else
+            if (current_page === 1) {
+                $('#pagin_left').addClass('active');
+                $('#pagin_first').addClass('active');
             }
             else {
-                $(this).removeClass('about-active');
-                $(this).addClass('about-passive');
-                let this_tag = $(this).attr('id');
-                tags.splice(tags.indexOf(this_tag), 1);
+                if (current_page === max_page) {
+                    $('#pagin_right').addClass('active');
+                    if (current_page === 2)
+                        $('#pagin_second').addClass('active');
+                    else
+                        $('#pagin_third').addClass('active');
+                } else {
+                    $('#pagin_second').addClass('active');
+                    set_text_pagin(current_page - 1, current_page, current_page + 1);
+                }
             }
-        });
+
+
+        }
+    });
 
 });
+function set_text_pagin(first, second, third) {
+    $('#pagin_first a').text(String(first));
+    $('#pagin_second a').text(String(second));
+    $('#pagin_third a').text(String(third));
+}
 </script>
 </html>
