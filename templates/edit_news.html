@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>News - LOCKED</title>
-    <link href="https://code.jquery.com/ui/1.12.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css">
+    <link href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -49,16 +49,18 @@
             <form>
                 <div class="form-group">
                     <h4 class="mb-2">Photo news</h4>
-                    <input type="file" class="mb-4 form-control-file" id="news_logo" accept=".jpg, .jpeg, .png" required>
+                    <input type="file" class="custom-file-input" id="news_logo" accept=".jpg, .jpeg, .png">
+                    <div class="mb-4 not-need-file" id="error_file">The picture is loaded, but you can replace it</div>
+
                     <h4 class="mb-2">News Title</h4>
                     <input class="form-control is-invalid" type="text" placeholder="My news title" id="news_title" required autocomplete="off">
-                    <div class="invalid-feedback">
-                        PARASHA, PEREDELIVAY
-                    </div>
+                    <div class="invalid-feedback" id="error_title">PARASHA, PEREDELIVAY</div>
                     <div class="mb-4"></div>
+
                     <h4 class="mb-2">News Text</h4>
                     <textarea class="mb-4 form-control" rows="15" id="news_text" required autocomplete="off"></textarea>
-                    <button type="submit" class="btn btn-primary submit">Submit</button>
+                    <button type="submit" class="btn btn-primary submit mb-6 after_text">Submit</button>
+                    <h6 class="error after_text m-3"></h6>
                 </div>
             </form>
         </div>
@@ -71,13 +73,9 @@
                 <div class="col params">
                     <div class="row">
                         <div class="col">
-                            <p class="title">Tags</p>
+                            <p class="title">News tags</p>
                             <ul class="list-group list_tags">
-                                <li class="list-group-item about" id="li1"><span><input type="text" class="form-control-plaintext tag" id="tags"></span></li>
-                                <li class="list-group-item about" id="li2"><span><input type="text" class="form-control-plaintext tag" id="tags"></span></li>
-                                <li class="list-group-item about" id="li3"><span><input type="text" class="form-control-plaintext tag" id="tags"></span></li>
-                                <li class="list-group-item about" id="li4"><span><input type="text" class="form-control-plaintext tag" id="tags"></span></li>
-                                <li class="list-group-item about" id="li5"><span><input type="text" class="form-control-plaintext tag" id="tags"></span></li>
+
                             </ul>
                         </div>
                     </div>
@@ -90,48 +88,51 @@
 <script src="/static/bootstrap/js/bootstrap.min.js"></script>
 </body>
 <script type="text/javascript">
+let need_photo = false;
+let count_tags = 5;
+let tags = []
+
+if (need_photo) {
+    $('#news_logo').attr('required', '');
+    $('#error_file').text('');
+}
+
+
+show_tags();
+$('#news_logo').next('.custom-file-label').html('test.jpg');
+
 $(document).ready(() => {
-    // let count_tags = 1;
-//
-    // $(".tag").on("change", function (event) {
-    //     let all_filled = true;
-    //     for (let i = 1; i <= count_tags; i++) {
-    //         if ($("#tag"+i.toString()).val() === '') {
-    //             all_filled = false;
-    //         }
-    //     }
-    //     if (all_filled) {
-    //
-    //     }
-    // });
-    var availableTags = [
-      "ActionScript",
-      "AppleScript",
-      "Asp",
-      "BASIC",
-      "C",
-      "C++",
-      "Clojure",
-      "COBOL",
-      "ColdFusion",
-      "Erlang",
-      "Fortran",
-      "Groovy",
-      "Haskell",
-      "Java",
-      "JavaScript",
-      "Lisp",
-      "Perl",
-      "PHP",
-      "Python",
-      "Ruby",
-      "Scala",
-      "Scheme"
-    ];
+    let availableTags = ["ActionScript"];
     $( ".tag" ).autocomplete({
       source: availableTags
     });
 
+    $("form").submit((event) => {
+        event.preventDefault();
+
+        let tags = []
+        $('.tag').each(function (i, elem) {
+            if ($(this).val())
+                tags.push($(this).val());
+        });
+        if (tags.length) {
+             $('.error').text('');
+            alert(true)
+        }
+        else {
+            $('.error').text('Please enter at least one tag!');
+        }
+    });
+
 });
+
+function show_tags() {
+    for (let i = 1; i <= count_tags; i++) {
+        let tag = tags[i - 1];
+        if (tag === undefined)
+            tag = '';
+        $('.list_tags').append('<li class="list-group-item about" id="li' + i + '"><span><input type="text" class="form-control-plaintext tag" value="' + tag + '"></span></li>');
+    }
+}
 </script>
 </html>

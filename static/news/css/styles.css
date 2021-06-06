@@ -92,7 +92,22 @@
 }
 
 
+.after_text {
+    display: flex;
+    margin: 0px auto;
+    justify-content: center;
+}
 
+.error {
+    color: darkred;
+}
+
+.not-need-file {
+    width: 100%;
+    margin-top: .25rem;
+    font-size: 0.875em;
+    color: lightgreen;
+}
 
 .submit {
     border-radius: 50px;
@@ -101,9 +116,6 @@
     padding: 8px 40px;
     cursor: pointer;
     border: 2px solid darkgray !important;
-
-  display: flex;
-  margin: 0px auto;
 }
 
 .submit:hover {
