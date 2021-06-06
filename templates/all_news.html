@@ -88,8 +88,7 @@
             <!-- ПАГИНАЦИЯ -->
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item active" id="pagin_left"><a class="page-link" tabindex="-1">First</a></li>
-                    <li class="page-item active" id="pagin_first"><a class="page-link">1</a></li>
+
                 </ul>
             </nav>
             <!-- КОНЕЦ ПАГИНАЦИИ -->
@@ -140,13 +139,7 @@ let count_posts_on_page = 5;
 let count_all_posts = 16;
 let max_page = Math.ceil(count_all_posts / count_posts_on_page);
 
-if (max_page >= 2)
-    $('.pagination').append('<li class="page-item" id="pagin_second"><a class="page-link">2</a></li>');
-if (max_page >= 3)
-    $('.pagination').append('<li class="page-item" id="pagin_third"><a class="page-link">3</a></li>');
-$('.pagination').append('<li class="page-item" id="pagin_right"><a class="page-link">Last</a></li>');
-if (max_page === 1)
-    $('#pagin_right').addClass('active');
+show_pagination();
 
 $(document).ready(() => {
     $('#datepicker').datepicker({
@@ -241,6 +234,20 @@ function set_text_pagin(first, second, third) {
     $('#pagin_first a').text(String(first));
     $('#pagin_second a').text(String(second));
     $('#pagin_third a').text(String(third));
+}
+
+function show_pagination() {
+    let pagin = $('.pagination');
+    pagin.empty();
+    pagin.append('<li class="page-item active" id="pagin_left"><a class="page-link" tabindex="-1">First</a></li>');
+    pagin.append('<li class="page-item active" id="pagin_first"><a class="page-link">1</a></li>');
+    if (max_page >= 2)
+        pagin.append('<li class="page-item" id="pagin_second"><a class="page-link">2</a></li>');
+    if (max_page >= 3)
+        pagin.append('<li class="page-item" id="pagin_third"><a class="page-link">3</a></li>');
+    pagin.append('<li class="page-item" id="pagin_right"><a class="page-link">Last</a></li>');
+    if (max_page === 1)
+        $('#pagin_right').addClass('active');
 }
 </script>
 </html>
