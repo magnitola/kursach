@@ -15,6 +15,16 @@
   color: white;
 }
 
+.about-passive {
+  background-color: darkgray;
+  color: white;
+}
+
+.about-active {
+  background-color: white;
+  color: black;
+}
+
 .content-hero-image {
   max-width: 100%;
 }
