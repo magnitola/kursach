@@ -1,7 +1,7 @@
 from pymongo import MongoClient, DESCENDING, ASCENDING
 from bson.objectid import ObjectId
 from werkzeug.security import check_password_hash, generate_password_hash
-from datetime import datetime
+import datetime
 import uuid
 
 DATABASE = MongoClient('localhost', 27017)['coursework']
@@ -9,6 +9,7 @@ COMMENTS = DATABASE['comments']
 POSTS = DATABASE['posts']
 USERS = DATABASE['users']
 TAGS = DATABASE['tags']
+LIKES = DATABASE['likes']
 
 
 class Roles:
@@ -25,6 +26,10 @@ class ErrorMessages:
     rights_create = 'Insufficient rights to create news!'
     not_found_post = 'Post not found!'
     rights_delete = 'Insufficient rights to delete news!'
+    rights_like = 'Insufficient rights to set like!'
+    rights_comment = 'Insufficient rights to leave a comment!'
+    rights_allow = 'Insufficient rights to allow comment!'
+    not_fount_comment = 'Comment not found!'
 
 
 def register(params):
@@ -113,9 +118,8 @@ def add_post(params):
         'author': USERS.find_one({'session': params['session']})['_id'],
         'tags': [tag['_id'] for tag in tags],
         'views': 0,
-        'likes': 0,
         'photo': params['photo'],
-        'date': datetime.now()
+        'date': datetime.date.today()
     }
     inserted_id = POSTS.insert_one(post_object).inserted_id
     request['success'] = True
@@ -163,6 +167,7 @@ def read_post(params):
         request.update(post)
         request['views'] += 1
         request['tags'] = tags
+        request['likes'] = LIKES.find({'object': ObjectId(post['_id'])}).count()
         return request
     else:
         request['messages'] = ErrorMessages.not_found_post
@@ -205,17 +210,132 @@ def save_post(params):
 def registry_posts(params):
     """
     Реестр новостей! С БОГОМ!
-    :param params: limit, sort, tags, page
+    :param params: limit, sort, tags, page, date, search
     :return:
     """
+    filter_search = {}
     if params['tags']:
-        filter_tags = {'tags': {'$in': [ObjectId(tag) for tag in params['tags']]}}
-    else:
-        filter_tags = {}
-    posts = list(POSTS.find(filter_tags).sort(params['sort']).skip((params['page'] - 1) * params['limit']).limit(params['limit']))
+        filter_search.update({'tags': {'$in': [ObjectId(tag) for tag in params['tags']]}})
+    if params['date']:
+        date = datetime.datetime.strptime(params['date'], '%d/%m/%Y')
+        filter_search.update({'date': datetime.date(date.year, date.month, date.day)})
+    if params['search']:
+        filter_search.update({'title': {'$regex': params['search']}})
+    posts = list(POSTS.find(filter_search).sort(params['sort']).skip((params['page'] - 1) * params['limit']).limit(params['limit']))
     for post in posts:
+        post['text'] = post['text'][:120] + '...'
         post['tags'] = [tag['name'] for tag in TAGS.find({'_id': {'$in': post['tags']}})]
     return posts
+
+
+def get_all_tags(params):
+    """
+    Возвращает все имеющиеся теги
+    :param params:
+    :return:
+    """
+    return list(TAGS.find())
+
+
+def set_like(params):
+    """
+    Поставить или убрать лайк
+    :param params: session, id
+    :return:
+    """
+    request = {
+        'success': False,
+        'messages': ''
+    }
+    user_info = USERS.find_one({'session': params['session']})
+    if not user_info:
+        return ErrorMessages.rights_like
+    param_to_search = {'user': user_info['_id'], 'object': ObjectId(params['id'])}
+    if LIKES.find_one(param_to_search):
+        LIKES.delete_one(param_to_search)
+    else:
+        LIKES.insert_one(param_to_search)
+    request['success'] = True
+    return request
+
+
+def write_comment(params):
+    """
+    Написать комментарий
+    :param params: session, text, id
+    :return:
+    """
+    request = {
+        'success': False,
+        'messages': ''
+    }
+    user_info = USERS.find_one({'session': params['session']})
+    if not user_info:
+        return ErrorMessages.rights_comment
+    allowed = user_info['role'] == Roles.admin or user_info['role'] == Roles.editor
+    COMMENTS.insert_one({'object': ObjectId(params['id']), 'author': user_info['_id'], 'is_allowed': allowed, 'date': datetime.datetime.now()})
+    request['success'] = True
+    return request
+
+
+def get_comments(params):
+    """
+    Получить все комментарии
+    :param params: session, id
+    :return:
+    """
+    user_info = USERS.find_one({'session': params['session']})
+    show_hidden = user_info['role'] == Roles.admin or user_info['role'] == Roles.editor
+    filter_to_search = {
+        'object': ObjectId(params['id'])
+    }
+    if not show_hidden:
+        filter_to_search['$or'] = [{'is_allowed': True}, {'author': user_info['_id']}]
+    return list(COMMENTS.find(filter_to_search).sort('date'))
+
+
+def allow_comment(params):
+    """
+    Одобрить комментарий
+    :param params: session, id
+    :return:
+    """
+    request = {
+        'success': False,
+        'messages': ''
+    }
+    user_info = USERS.find_one({'session': params['session']})
+    if user_info['role'] == Roles.admin or user_info['role'] == Roles.editor:
+        request['messages'] = ErrorMessages.rights_allow
+        return request
+    if not COMMENTS.find_one({'_id': params['_id']}):
+        request['messages'] = ErrorMessages.not_fount_comment
+        return request
+    COMMENTS.update_one({'_id': params['_id']}, {'$set': {'is_allowed': True}})
+    request['success'] = True
+    return request
+
+
+def delete_comment(params):
+    """
+    Удалить комментарий
+    :param params: session, id
+    :return:
+    """
+    request = {
+        'success': False,
+        'messages': ''
+    }
+    user_info = USERS.find_one({'session': params['session']})
+    if user_info['role'] == Roles.admin or user_info['role'] == Roles.editor:
+        request['messages'] = ErrorMessages.rights_allow
+        return request
+    if not COMMENTS.find_one({'_id': params['_id']}):
+        request['messages'] = ErrorMessages.not_fount_comment
+        return request
+    COMMENTS.delete_one({'_id': params['_id']})
+    request['success'] = True
+    return request
 
 
 if __name__ == '__main__':
