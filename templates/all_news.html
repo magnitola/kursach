@@ -46,43 +46,8 @@
 <div class="container mt-3">
     <div class="row flex-lg-row flex-column justify-content-center">
         <div class="col col-lg-8 m-2">
-            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                <div class="col p-4 d-flex flex-column position-static">
-                    <strong class="d-inline-block mb-2 text-primary">Мир</strong>
-                    <h3 class="mb-0">Рекомендуемый пост</h3>
-                    <div class="mb-1 text-muted">12 Ноября</div>
-                    <p class="card-text mb-auto">Это более широкая карточка с вспомогательным текстом ниже в качестве
-                        естественного перехода к дополнительному контенту.</p>
-                    <a href="#" class="stretched-link">Продолжить чтение</a>
-                </div>
-                <div class="col-auto d-none d-lg-block">
-                    <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
-                         role="img" aria-label="Placeholder: Эскиз" preserveAspectRatio="xMidYMid slice"
-                         focusable="false"><title>Placeholder</title>
-                        <rect width="100%" height="100%" fill="#55595c"></rect>
-                    </svg>
-
-                </div>
-            </div>
-
-
-            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                <div class="col p-4 d-flex flex-column position-static">
-                    <strong class="d-inline-block mb-2 text-primary">Мир</strong>
-                    <h3 class="mb-0">Рекомендуемый пост</h3>
-                    <div class="mb-1 text-muted">12 Ноября</div>
-                    <p class="card-text mb-auto">Это более широкая карточка с вспомогательным текстом ниже в качестве
-                        естественного перехода к дополнительному контенту.</p>
-                    <a href="#" class="stretched-link">Продолжить чтение</a>
-                </div>
-                <div class="col-auto d-none d-lg-block">
-                    <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
-                         role="img" aria-label="Placeholder: Эскиз" preserveAspectRatio="xMidYMid slice"
-                         focusable="false"><title>Placeholder</title>
-                        <rect width="100%" height="100%" fill="#55595c"></rect>
-                    </svg>
-
-                </div>
+            <div id="news">
+                
             </div>
 
             <!-- ПАГИНАЦИЯ -->
@@ -135,12 +100,89 @@
 </body>
 <script type="text/javascript">
 let current_page = 1;
-let count_posts_on_page = 5;
-let count_all_posts = 16;
+let count_posts_on_page = 3;
+let posts = [{
+    tags: ['Web programming', 'Java Script'],
+    title: 'Мое название поста!',
+    date: '15 Декабря',
+    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
+    id: '12345'
+},
+{
+    tags: ['Web programming', 'Java Script'],
+    title: 'Мое название поста!',
+    date: '14 Декабря',
+    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
+    id: '12345'
+},
+{
+    tags: ['Web programming', 'Java Script'],
+    title: 'Мое название поста!',
+    date: '13 Декабря',
+    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
+    id: '12345'
+},{
+    tags: ['Web programming', 'Java Script'],
+    title: 'Мое название поста!',
+    date: '12 Декабря',
+    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
+    id: '12345'
+},
+{
+    tags: ['Web programming', 'Java Script'],
+    title: 'Мое название поста!',
+    date: '11 Декабря',
+    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
+    id: '12345'
+},
+{
+    tags: ['Web programming', 'Java Script'],
+    title: 'Мое название поста!',
+    date: '10 Декабря',
+    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
+    id: '12345'
+},
+{
+    tags: ['Web programming', 'Java Script'],
+    title: 'Мое название поста!',
+    date: '9 Декабря',
+    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
+    id: '12345'
+},
+{
+    tags: ['Web programming', 'Java Script'],
+    title: 'Мое название поста!',
+    date: '8 Декабря',
+    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
+    id: '12345'
+},
+{
+    tags: ['Web programming', 'Java Script'],
+    title: 'Мое название поста!',
+    date: '7 Декабря',
+    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
+    id: '12345'
+},
+{
+    tags: ['Web programming', 'Java Script'],
+    title: 'Мое название поста!',
+    date: '6 Декабря',
+    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
+    id: '12345'
+},
+{
+    tags: ['Web programming', 'Java Script'],
+    title: 'Мое название поста!',
+    date: '5 Декабря',
+    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
+    id: '12345'
+}]
+let count_all_posts = posts.length;
 let sort = 'views';
 let tags = [];
 let max_page = Math.ceil(count_all_posts / count_posts_on_page);
 
+show_news();
 show_pagination();
 
 $(document).ready(() => {
@@ -224,7 +266,7 @@ $(document).ready(() => {
                     set_text_pagin(current_page - 1, current_page, current_page + 1);
                 }
             }
-
+            show_news();
 
         }
     });
@@ -248,6 +290,30 @@ function show_pagination() {
     pagin.append('<li class="page-item" id="pagin_right"><a class="page-link">Last</a></li>');
     if (max_page === 1)
         $('#pagin_right').addClass('active');
+}
+
+function show_news() {
+    let elem = $('#news');
+    elem.empty();
+    for (let i = (current_page - 1) * count_posts_on_page; i < count_posts_on_page * current_page && i < count_all_posts; i++) {
+        elem.append(`<div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-primary">` + posts[i].tags.join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;') + `</strong>
+                        <h3 class="mb-0">` + posts[i].title + `</h3>
+                        <div class="mb-1 text-muted">` + posts[i].date + `</div>
+                        <p class="card-text mb-auto">` + posts[i].text + `</p>
+                        <a href="/news/`+ posts[i].id +`" class="stretched-link">Продолжить чтение</a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
+                             role="img" aria-label="Placeholder: Эскиз" preserveAspectRatio="xMidYMid slice"
+                             focusable="false"><title>Placeholder</title>
+                            <rect width="100%" height="100%" fill="#55595c"></rect>
+                        </svg>
+
+                    </div>
+                </div>`)
+    }
 }
 </script>
 </html>
