@@ -3,10 +3,6 @@ from flask import Flask, render_template
 app = Flask(__name__)
 
 
-def return_tag_html(number):
-    return f'<li class="list-group-item about" id="li{number}"><span><input type="text" class="form-control-plaintext tag" id="tag{number}"></span></li>'
-
-
 @app.route('/')
 def index_route():
     return render_template('index.html')
