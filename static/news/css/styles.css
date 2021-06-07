@@ -15,6 +15,11 @@
   color: white;
 }
 
+.about-passive:hover {
+  background-color: #dbd6d6;
+  color: white;
+}
+
 .about-passive {
   background-color: darkgray;
   color: white;
@@ -31,6 +36,7 @@
 
 .news_text {
   font-family: 'Comfortaa', cursive;
+  font-size: 18px;
 }
 
 .main img {

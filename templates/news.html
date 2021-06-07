@@ -9,7 +9,10 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cookie">
     <link rel="stylesheet" href="/static/news/css/Pretty-Header.css">
     <link rel="stylesheet" href="/static/news/css/styles.css">
-
+    <link href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
 </head>
@@ -61,25 +64,8 @@
                     <p class="news_text">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                         Lorem Ipsum
                         has been the industry's standard dummy text ever since the 1500s, when an unknown print
-                        took a galley of type and scrambled electronic.
-
-                    <p class="news_text">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                        Lorem Ipsum
-                        has been the industry's standard dummy text ever since the 1500s, when an unknown print
                         took a galley of type and scrambled electronic.</p>
 
-                    <h3 class="news_sub-title">Why Choose Me?</h3>
-                    <p class="news_text">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                        Lorem Ipsum
-                        has been the industry's standard dummy text ever since the 1500s, when an unknown print
-                        took a galley of type and scrambled electronic.</p>
-
-
-                    <p class="news_text">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                        Lorem Ipsum
-                        has been the industry's standard dummy text ever since the 1500s, when an unknown print
-                        took a galley of type and scrambled it to make a type specimen book. It has survived not
-                        only five centuries, but also the leap into electronic.</p>
 
                 </div>
                 <!-- End Section Content -->
@@ -92,14 +78,16 @@
                         <form id="form" enctype="multipart/form-data">
                             <div class="row mb-2">
                                 <div class="col d-flex flex-row-reverse">
-                                    <button class="btn btn-outline-primary" type="submit">Send</button>
+                                    <!-- <button class="btn btn-outline-primary" type="submit">Send</button> -->
                                 </div>
                             </div>
                             <div class="row justify-content-center mb-2">
                                 <div class="col-md-2 offset-md-0 col-2"><img src="/static/logo.png"></div>
-                                <div class="col-md-10 col-10"><textarea id="comment" class="form-control" minlength="3" maxlength="200" autocomplete="off" required></textarea></div>
+                                <!-- <textarea id="comment" class="form-control" minlength="3" maxlength="200" autocomplete="off" required></textarea> -->
+                                <div class="col-md-10 col-10" style="color: black"><a href="/login">Log in</a> to leave a comment</div>
                                 <div class="col mt-4">
                                     <ul class="list-group">
+                                        <!-- КОММЕНТАРИЙ -->
                                         <li class="list-group-item">
                                             <div class="d-flex media">
                                                 <div></div>
@@ -110,8 +98,10 @@
                                                             <div class="row">
                                                                 <div class="col">
                                                                     <p><a href="#">Brennan Prill:</a> This guy has been going 100+ MPH on side streets. ASJ SAhfkjashfa ASHFkjahsflkh<br>
-                                                                        <small class="text-muted">August 6, 2016 @ 10:35am </small></p>
-                                                                    <a href="#">Редактировать</a> <a href="#">Удалить</a>
+                                                                        <small class="text-muted">August 6, 2016 @ 10:35am </small>
+                                                                        <br><small class="text-muted">Waiting for moderation...</small>
+                                                                    </p>
+                                                                    <a href="#">Delete</a> <a href="#">Publish</a>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -119,25 +109,7 @@
                                                 </div>
                                             </div>
                                         </li>
-                                        <li class="list-group-item">
-                                            <div class="d-flex media">
-                                                <div></div>
-                                                <div class="media-body">
-                                                    <div class="d-flex media" style="overflow:visible;">
-                                                        <div class="col-1"><img style="width: 25px; height:25px;" src="/static/logo.png"></div>
-                                                        <div style="overflow:visible;" class="col">
-                                                            <div class="row">
-                                                                <div class="col">
-                                                                    <p><a href="#">Brennan Prill:</a> This guy has been going 100+ MPH on side streets. ASJ SAhfkjashfa ASHFkjahsflkh<br>
-                                                                        <small class="text-muted">August 6, 2016 @ 10:35am </small></p>
-                                                                    <a href="#">Редактировать</a> <a href="#">Удалить</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
+                                        <!-- КОНЕЦ КОММЕНТАРИЯ -->
                                     </ul>
                                 </div>
                             </div>
@@ -169,9 +141,9 @@
                         <div class="col">
                             <p class="title">Tags</p>
                             <ul class="list-group">
-                                <li class="list-group-item about"><span>Web programming</span></li>
-                                <li class="list-group-item about"><span>Java Script</span></li>
-                                <li class="list-group-item about"><span>Node JS</span></li>
+                                <li class="list-group-item about about-passive"><span>Web programming</span></li>
+                                <li class="list-group-item about about-passive"><span>Java Script</span></li>
+                                <li class="list-group-item about about-passive"><span>Node JS</span></li>
                             </ul>
                         </div>
                     </div>
@@ -183,9 +155,9 @@
                         <div class="col">
                             <p class="title">Tools</p>
                             <ul class="list-group">
-                                <li class="list-group-item about"><span>Like</span></li>
-                                <li class="list-group-item about"><span>Edit</span></li>
-                                <li class="list-group-item about"><span>Delete</span></li>
+                                <li class="list-group-item" id="like"><span>Like</span></li>
+                                <li class="list-group-item about-passive"><span>Edit</span></li>
+                                <li class="list-group-item about-passive"><span>Delete</span></li>
                             </ul>
                         </div>
                     </div>
@@ -196,5 +168,33 @@
 </div>
 <script src="/static/bootstrap/js/bootstrap.min.js"></script>
 </body>
+<script type="text/javascript">
+let is_liked = false;
 
+set_like();
+
+$(document).ready(() => {
+    $('#like').click(function () {
+        is_liked = !is_liked;
+        set_like();
+    });
+
+
+});
+
+
+function set_like() {
+    let elem = $('#like');
+    if (is_liked) {
+        elem.removeClass('about-passive');
+        elem.addClass('about-active');
+        elem.text('Liked');
+    }
+    else {
+        elem.text('Like');
+        elem.removeClass('about-active');
+        elem.addClass('about-passive');
+    }
+}
+</script>
 </html>
