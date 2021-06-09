@@ -19,26 +19,30 @@
 
 <body>
 <nav class="navbar navbar-light navbar-expand-md custom-header">
-    <div class="container-fluid">
+   <div class="container-fluid">
         <div><a class="navbar-brand" href="#">LOCKED</a>
             <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navbar-collapse"><span
                     class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
         </div>
         <div class="collapse navbar-collapse justify-content-end" id="navbar-collapse">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Overview </a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Surveys </a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#"> Reports</a></li>
-                <li class="nav-item"></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/news">All news</a></li>
+                {% if is_editor %}
+                <li class="nav-item"><a class="nav-link text-white" href="/edit">Add news</a></li>
+                {% endif %}
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false"
                                                  data-bs-toggle="dropdown" href="#"> <img class="dropdown-image"
                                                                                           src="/static/news/img/avatar.jpg"></a>
                     <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item" href="#">Settings </a>
-                        <a class="dropdown-item" href="#">Payments </a>
-                        <a class="dropdown-item" href="#">Logout </a></div>
+                        {% if is_authorized %}
+                        <a class="dropdown-item" href="/logout">Logout </a>
+                        {% else %}
+                        <a class="dropdown-item" href="/login">Login </a>
+                        <a class="dropdown-item" href="/registration">Registration </a>
+                        {% endif %}
+                    </div>
                 </li>
             </ul>
         </div>
@@ -277,6 +281,35 @@ $(document).ready(() => {
         });
     });
 
+    $('.comments').on('click', '.allow_comment', function () {
+        let formData = new FormData();
+        formData.append('id', $(this).data('comment'));
+        formData.append('post_id', "{{ _id }}");
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('allow_comment_route') }}",
+            data: formData,
+            //contentType: 'application/json;charset=UTF-8',
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: function (request) {
+                if (request['success']) {
+                    comments = request['comments'];
+                    load_comments();
+                }
+                else {
+                    $('.error').text(request['messages']);
+                }
+
+            },
+            error: function (request) {
+                console.log(request);
+                alert('Все сломалось!');
+            }
+        });
+    });
+
 });
 
 
@@ -310,7 +343,7 @@ function load_comments() {
                                                     <small class="text-muted">`+ comments[i].date +` </small>
                                                     `+ (comments[i].is_allowed ? "" : '<br><small class="text-muted">Waiting for moderation...</small>')+`
                                                 </p>
-                                                    `+ (is_editor ? '<a class="del_comment" href="#" data-comment="'+ comments[i]._id +'">Delete</a>' : '' + !comments[i].is_allowed && is_editor ? '<a href="#" class="allow_comment" data-comment="'+ comments[i]._id +'">Publish</a>' : '') + `
+                                                    `+ (is_editor ? '<a class="del_comment" href="#" data-comment="'+ comments[i]._id +'">Delete</a>' : '') + (!comments[i].is_allowed && is_editor ? '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" class="allow_comment" data-comment="'+ comments[i]._id +'">Publish</a>' : '') + `
                                             </div>
                                         </div>
                                     </div>

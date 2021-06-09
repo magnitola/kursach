@@ -1,7 +1,8 @@
 from flask import Flask, request, redirect, url_for, render_template, make_response, jsonify
 from werkzeug.utils import secure_filename
 from server import (get_user_info, can_edit_news, get_all_tags, read_post, save_post, add_post, get_comments, set_like,
-                    is_liked, write_comment, login, delete_comment, del_post, registry_posts, get_all_tags)
+                    is_liked, write_comment, login, delete_comment, del_post, registry_posts, get_all_tags, register,
+                    allow_comment)
 from bson.objectid import ObjectId
 import datetime
 import json
@@ -47,10 +48,6 @@ def news_old_route():
 def edit_news_old_route():
     return render_template('edit_news.html')
 
-
-@app.route('/registration')
-def registration_route():
-    return render_template('register.html')
 
 # ===========================
 
@@ -170,7 +167,7 @@ def login_route():
             resp = make_response(redirect(url_for('login_route')))
             resp.set_cookie('session', '', expires=0)
             return resp
-        return redirect(url_for('news_route', post='60c055d0a566bd9944e161bb'))
+        return redirect(url_for('all_news_route'))
     return render_template('auth.html')
 
 
@@ -194,6 +191,19 @@ def delete_comment_route():
     }
     params.update(dict(request.form))
     result = delete_comment(params)
+    params['id'] = params['post_id']
+    result['comments'] = get_comments(params)
+    encode_params(result)
+    return make_response(json.dumps(result))
+
+
+@app.route('/allow_comment', methods=['POST'])
+def allow_comment_route():
+    params = {
+        'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
+    }
+    params.update(dict(request.form))
+    result = allow_comment(params)
     params['id'] = params['post_id']
     result['comments'] = get_comments(params)
     encode_params(result)
@@ -237,6 +247,41 @@ def all_news_route():
     params['is_editor'] = can_edit_news(params)
     encode_params(params)
     return render_template('all_news.html', **params)
+
+
+@app.route('/logout')
+def logout_route():
+    resp = make_response(redirect(url_for('all_news_route')))
+    resp.set_cookie('session', '', expires=0)
+    return resp
+
+
+@app.route('/registration')
+def registration_route():
+    session = request.cookies.get('session')
+    params = {
+        'session': session
+    }
+    if session is not None:
+        if not get_user_info(params):
+            resp = make_response(redirect(url_for('login_route')))
+            resp.set_cookie('session', '', expires=0)
+            return resp
+        return redirect(url_for('all_news_route'))
+    return render_template('register.html')
+
+
+@app.route('/registration', methods=['POST'])
+def do_registration_route():
+    params = dict(request.form)
+    result = register(params)
+    encode_params(result)
+    if result['success']:
+        resp = make_response(json.dumps(result))
+        resp.set_cookie('session', str(result['session']), max_age=60 * 60 * 24 * 365 * 2)
+    else:
+        resp = make_response(json.dumps(result))
+    return resp
 
 
 if __name__ == '__main__':

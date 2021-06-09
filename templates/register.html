@@ -8,11 +8,43 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
     <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
-
+    <link rel="stylesheet" href="/static/news/css/styles.css">
     <link id="theme" rel="stylesheet" type="text/css" href="/static/login/auth.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cookie">
+    <link rel="stylesheet" href="/static/news/css/Pretty-Header.css">
 
 </head>
 <body>
+<nav class="navbar navbar-light navbar-expand-md custom-header">
+   <div class="container-fluid">
+        <div><a class="navbar-brand" href="#">LOCKED</a>
+            <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navbar-collapse"><span
+                    class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+        </div>
+        <div class="collapse navbar-collapse justify-content-end" id="navbar-collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link text-white" href="/news">All news</a></li>
+                {% if is_editor %}
+                <li class="nav-item"><a class="nav-link text-white" href="/edit">Add news</a></li>
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false"
+                                                 data-bs-toggle="dropdown" href="#"> <img class="dropdown-image"
+                                                                                          src="/static/news/img/avatar.jpg"></a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        {% if is_authorized %}
+                        <a class="dropdown-item" href="/logout">Logout </a>
+                        {% else %}
+                        <a class="dropdown-item" href="/login">Login </a>
+                        <a class="dropdown-item" href="/registration">Registration </a>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 <div class="container px-4 py-5 mx-auto">
     <div class="card card0">
         <div class="d-flex flex-lg-row flex-column-reverse">
@@ -57,7 +89,7 @@ $(document).ready(() => {
 
         if (!password_equal) {
             formValid = false;
-            $("#error_msg").text("Пароли не совпадают!");
+            $("#error_msg").text("Password mismatch!");
         }
 
         let regx = RegExp("(?=.*[0-9])(?=.*[!-.:-@[-`{-~])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!-.:-@[-`{-~]{8,}", "gm"),
@@ -65,7 +97,7 @@ $(document).ready(() => {
 
         if (!password_regExp) {
             formValid = false;
-            $("#error_msg").text("Извините! Ваш пароль должен иметь спец.символы, латинские заглавные и прописные буквы!");
+            $("#error_msg").text("Your password must have special characters, latin capital and uppercase letters!");
         }
 
         if (formValid) {
@@ -79,7 +111,7 @@ $(document).ready(() => {
 
             $.ajax({
                 type: "POST",
-                url: "#", //" url_for('go_register_api') "
+                url: "{{ url_for('do_registration_route') }}", //" url_for('go_register_api') "
                 data: formData,
                 // contentType: 'application/json;charset=UTF-8',
                 processData: false,
@@ -88,14 +120,14 @@ $(document).ready(() => {
                 success: function (request) {
                     //let request = JSON.parse(data);
                     if (request['success']) {
-                        window.location.replace("/profile");
+                        window.location.replace("/news");
                     }
                     else {
-                        $("#error_msg").text("Логин уже зарегистрирован!");
+                        $("#error_msg").text(request['messages']);
                     }
                 },
                 error: function (data) {
-                    $("#error_msg").text("Ошибка на сервере!")
+                    $("#error_msg").text("Server error!")
                 }
             })
         }

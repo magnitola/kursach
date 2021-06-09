@@ -27,17 +27,23 @@
         </div>
         <div class="collapse navbar-collapse justify-content-end" id="navbar-collapse">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Add news</a></li>
-                <li class="nav-item"></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/news">All news</a></li>
+                {% if is_editor %}
+                <li class="nav-item"><a class="nav-link text-white" href="/edit">Add news</a></li>
+                {% endif %}
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false"
                                                  data-bs-toggle="dropdown" href="#"> <img class="dropdown-image"
                                                                                           src="/static/news/img/avatar.jpg"></a>
                     <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item" href="#">Settings </a>
-                        <a class="dropdown-item" href="#">Payments </a>
-                        <a class="dropdown-item" href="#">Logout </a></div>
+                        {% if is_authorized %}
+                        <a class="dropdown-item" href="/logout">Logout </a>
+                        {% else %}
+                        <a class="dropdown-item" href="/login">Login </a>
+                        <a class="dropdown-item" href="/registration">Registration </a>
+                        {% endif %}
+                    </div>
                 </li>
             </ul>
         </div>
