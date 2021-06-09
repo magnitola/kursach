@@ -37,6 +37,7 @@
 .news_text {
   font-family: 'Comfortaa', cursive;
   font-size: 18px;
+    white-space: pre-wrap;
 }
 
 .main img {
@@ -106,6 +107,7 @@
 
 .error {
     color: darkred;
+    margin: auto;
 }
 
 .not-need-file {

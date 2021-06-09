@@ -51,7 +51,7 @@ $(document).ready(() => {
 
         $.ajax({
             type: "POST",
-            url: "#", // " url_for('go_login_api') "
+            url: "{{ url_for('do_login_route') }}",
             data: formData,
             // contentType: 'application/json;charset=UTF-8',
             processData: false,
@@ -59,14 +59,14 @@ $(document).ready(() => {
             dataType: "json",
             success: function (request) {
                 if (request['success']) {
-                    window.location.replace("/profile");
+                    window.location.replace("/news");
                 }
                 else {
-                    $("#error_msg").text("Неправильный логин или пароль!");
+                    $("#error_msg").text(request['messages']);
                 }
             },
             error: function (request) {
-                $("#error_msg").text("Ошибка на сервере!")
+                $("#error_msg").text("Server error!")
             }
         })
 

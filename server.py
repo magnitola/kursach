@@ -331,13 +331,13 @@ def allow_comment(params):
         'messages': ''
     }
     user_info = USERS.find_one({'session': params['session']})
-    if user_info['role'] == Roles.admin or user_info['role'] == Roles.editor:
+    if not (user_info['role'] == Roles.admin or user_info['role'] == Roles.editor):
         request['messages'] = ErrorMessages.rights_allow
         return request
-    if not COMMENTS.find_one({'_id': params['_id']}):
+    if not COMMENTS.find_one({'_id': ObjectId(params['id'])}):
         request['messages'] = ErrorMessages.not_fount_comment
         return request
-    COMMENTS.update_one({'_id': params['_id']}, {'$set': {'is_allowed': True}})
+    COMMENTS.update_one({'_id': ObjectId(params['id'])}, {'$set': {'is_allowed': True}})
     request['success'] = True
     return request
 
@@ -353,13 +353,13 @@ def delete_comment(params):
         'messages': ''
     }
     user_info = USERS.find_one({'session': params['session']})
-    if user_info['role'] == Roles.admin or user_info['role'] == Roles.editor:
+    if not (user_info['role'] == Roles.admin or user_info['role'] == Roles.editor):
         request['messages'] = ErrorMessages.rights_allow
         return request
-    if not COMMENTS.find_one({'_id': params['_id']}):
+    if not COMMENTS.find_one({'_id': ObjectId(params['id'])}):
         request['messages'] = ErrorMessages.not_fount_comment
         return request
-    COMMENTS.delete_one({'_id': params['_id']})
+    COMMENTS.delete_one({'_id': ObjectId(params['id'])})
     request['success'] = True
     return request
 

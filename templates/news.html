@@ -70,8 +70,8 @@
                             <div class="row mb-2">
                                 <div class="col d-flex flex-row-reverse">
                                     {% if is_authorized %}
-                                        <h6 class="error"></h6>
                                         <button class="btn btn-outline-primary" type="submit">Send</button>
+                                        <h6 class="error"></h6>
                                     {% endif %}
                                 </div>
                             </div>
@@ -190,6 +190,33 @@ $(document).ready(() => {
        window.location.href = "/edit/" + "{{ _id }}";
     });
 
+    $('#delete').click(function () {
+        let formData = new FormData();
+        formData.append('id', "{{ _id }}");
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('delete_route') }}",
+            data: formData,
+            //contentType: 'application/json;charset=UTF-8',
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: function (request) {
+                if (request['success']) {
+                    window.location.replace("/news");
+                }
+                else {
+                    $('.error').text(request['messages']);
+                }
+
+            },
+            error: function (request) {
+                console.log(request);
+                alert('Все сломалось!');
+            }
+        });
+    });
+
     $("form").submit((event) => {
         event.preventDefault();
         let formData = new FormData();
@@ -198,6 +225,36 @@ $(document).ready(() => {
         $.ajax({
             type: "POST",
             url: "{{ url_for('send_comment_route') }}",
+            data: formData,
+            //contentType: 'application/json;charset=UTF-8',
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: function (request) {
+                if (request['success']) {
+                    comments = request['comments'];
+                    load_comments();
+                    $('#comment').val('');
+                }
+                else {
+                    $('.error').text(request['messages']);
+                }
+
+            },
+            error: function (request) {
+                console.log(request);
+                alert('Все сломалось!');
+            }
+        });
+    });
+
+    $('.comments').on('click', '.del_comment', function () {
+        let formData = new FormData();
+        formData.append('id', $(this).data('comment'));
+        formData.append('post_id', "{{ _id }}");
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('delete_comment_route') }}",
             data: formData,
             //contentType: 'application/json;charset=UTF-8',
             processData: false,
@@ -219,7 +276,6 @@ $(document).ready(() => {
             }
         });
     });
-
 
 });
 
@@ -254,7 +310,7 @@ function load_comments() {
                                                     <small class="text-muted">`+ comments[i].date +` </small>
                                                     `+ (comments[i].is_allowed ? "" : '<br><small class="text-muted">Waiting for moderation...</small>')+`
                                                 </p>
-                                                    `+ (is_editor ? '<a href="#" data-comment="'+ comments[i]._id +'">Delete</a>' : '' + !comments[i].is_allowed && is_editor ? '<a href="#" data-comment="'+ comments[i]._id +'">Publish</a>' : '') + `
+                                                    `+ (is_editor ? '<a class="del_comment" href="#" data-comment="'+ comments[i]._id +'">Delete</a>' : '' + !comments[i].is_allowed && is_editor ? '<a href="#" class="allow_comment" data-comment="'+ comments[i]._id +'">Publish</a>' : '') + `
                                             </div>
                                         </div>
                                     </div>

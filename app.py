@@ -1,6 +1,7 @@
 from flask import Flask, request, redirect, url_for, render_template, make_response, jsonify
 from werkzeug.utils import secure_filename
-from server import get_user_info, can_edit_news, get_all_tags, read_post, save_post, add_post, get_comments, set_like, is_liked, write_comment
+from server import (get_user_info, can_edit_news, get_all_tags, read_post, save_post, add_post, get_comments, set_like,
+                    is_liked, write_comment, login, delete_comment, del_post)
 from bson.objectid import ObjectId
 import datetime
 import json
@@ -50,11 +51,6 @@ def all_news_route():
 @app.route('/edit_news_old')
 def edit_news_old_route():
     return render_template('edit_news.html')
-
-
-@app.route('/login')
-def login_route():
-    return render_template('auth.html')
 
 
 @app.route('/registration')
@@ -166,6 +162,58 @@ def send_comment_route():
     result['comments'] = get_comments(params)
     encode_params(result)
     return result
+
+
+@app.route('/login')
+def login_route():
+    session = request.cookies.get('session')
+    params = {
+        'session': session
+    }
+    if session is not None:
+        if not get_user_info(params):
+            resp = make_response(redirect(url_for('login_route')))
+            resp.set_cookie('session', '', expires=0)
+            return resp
+        return redirect(url_for('news_route', post='60c055d0a566bd9944e161bb'))
+    return render_template('auth.html')
+
+
+@app.route('/login', methods=['POST'])
+def do_login_route():
+    params = dict(request.form)
+    result = login(params)
+    encode_params(result)
+    if result['success']:
+        resp = make_response(json.dumps(result))
+        resp.set_cookie('session', str(result['session']), max_age=60 * 60 * 24 * 365 * 2)
+    else:
+        resp = make_response(json.dumps(result))
+    return resp
+
+
+@app.route('/delete_comment', methods=['POST'])
+def delete_comment_route():
+    params = {
+        'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
+    }
+    params.update(dict(request.form))
+    result = delete_comment(params)
+    params['id'] = params['post_id']
+    result['comments'] = get_comments(params)
+    encode_params(result)
+    return make_response(json.dumps(result))
+
+
+@app.route('/delete', methods=['POST'])
+def delete_route():
+    params = {
+        'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
+    }
+    params.update(dict(request.form))
+    result = del_post(params)
+    encode_params(result)
+    return make_response(result)
 
 
 if __name__ == '__main__':
