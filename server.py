@@ -155,7 +155,7 @@ def del_post(params):
     POSTS.delete_one({'_id': ObjectId(params['id'])})
     request['success'] = True
     for tag in post['tags']:
-        if POSTS.find({'tags': tag}):
+        if not POSTS.find({'tags': tag}):
             TAGS.delete_one({'_id': tag})
 
     return request
@@ -381,6 +381,24 @@ def get_user_info(params):
     :return:
     """
     return USERS.find_one({'session': params['session']})
+
+
+def get_all_users(params):
+    """
+    Получить инфо по пользователю
+    :param params:
+    :return:
+    """
+    return list(USERS.find())
+
+
+def change_role(params):
+    """
+    Получить инфо по пользователю
+    :param params: session, id, role
+    :return:
+    """
+    USERS.update_one({'_id': ObjectId(params['id'])}, {'$set': {'role': params['role']}})
 
 
 if __name__ == '__main__':

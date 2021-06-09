@@ -1,8 +1,8 @@
-from flask import Flask, request, redirect, url_for, render_template, make_response, jsonify
+from flask import Flask, request, redirect, url_for, render_template, make_response, abort
 from werkzeug.utils import secure_filename
-from server import (get_user_info, can_edit_news, get_all_tags, read_post, save_post, add_post, get_comments, set_like,
+from server import (get_user_info, can_edit_news, read_post, save_post, add_post, get_comments, set_like, change_role,
                     is_liked, write_comment, login, delete_comment, del_post, registry_posts, get_all_tags, register,
-                    allow_comment)
+                    allow_comment, get_all_users)
 from bson.objectid import ObjectId
 import datetime
 import json
@@ -34,22 +34,38 @@ def encode_params(params):
         params[key] = json.loads(params[key])
 
 
-@app.route('/')
+@app.route('/users')
 def index_route():
-    return render_template('index.html')
+    # get_all_users
+    params = {
+        'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
+    }
+    user_info = get_user_info(params)
+    if user_info:
+        if user_info['role'] == 'admin':
+            params['is_authorized'] = True
+            params['is_editor'] = True
+            params['users'] = get_all_users(params)
+            encode_params(params)
+            return render_template('users.html', **params)
+        else:
+            return abort(403)
+    else:
+        resp = make_response(redirect(url_for('login_route')))
+        resp.set_cookie('session', '', expires=0)
+        return resp
 
 
-@app.route('/news_old')
-def news_old_route():
-    return render_template('news.html')
-
-
-@app.route('/edit_news_old')
-def edit_news_old_route():
-    return render_template('edit_news.html')
-
-
-# ===========================
+@app.route('/change_role', methods=['POST'])
+def change_role_route():
+    params = {
+        'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
+    }
+    params.update(dict(request.form))
+    user_info = get_user_info(params)
+    if user_info and user_info['role'] == 'admin':
+        change_role(params)
+    return make_response(params)
 
 
 @app.route('/edit/<post>')
@@ -66,7 +82,8 @@ def edit_news_route(post=None):
             params_to_render = {
                 'news': read_post(params, stat=False) if post else None,
                 'all_tags': [tag['name'] for tag in get_all_tags(params)],
-                'is_editor': can_edit_news(params)
+                'is_editor': can_edit_news(params),
+                'is_admin': user_info['role'] == 'admin'
             }
             encode_params(params_to_render)
             return render_template('edit_news.html', **params_to_render)
@@ -123,11 +140,17 @@ def news_route(post=None):
         'id': post
     }
     if post:
+        user = get_user_info(params)
+        if user and user['role'] == 'admin':
+            admin = True
+        else:
+            admin = False
         params_to_render = read_post(params)
         params_to_render['is_editor'] = can_edit_news(params)
         params_to_render['comments'] = get_comments(params)
         params_to_render['is_authorized'] = bool(get_user_info(params))
         params_to_render['is_liked'] = is_liked(params)
+        params_to_render['is_admin'] = admin
         encode_params(params_to_render)
         print(params_to_render)
         return render_template('news.html', **params_to_render)
@@ -243,8 +266,14 @@ def all_news_route():
         'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
         'tags': get_all_tags({})
     }
+    user = get_user_info(params)
+    if user and user['role'] == 'admin':
+        admin = True
+    else:
+        admin = False
     params['is_authorized'] = bool(get_user_info(params))
     params['is_editor'] = can_edit_news(params)
+    params['is_admin'] = admin
     encode_params(params)
     return render_template('all_news.html', **params)
 

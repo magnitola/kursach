@@ -33,6 +33,9 @@
                                                                                           src="/static/news/img/avatar.jpg"></a>
                     <div class="dropdown-menu dropdown-menu-end">
                         {% if is_authorized %}
+                            {% if is_admin %}
+                             <a class="dropdown-item" href="/users">Users </a>
+                            {% endif %}
                         <a class="dropdown-item" href="/logout">Logout </a>
                         {% else %}
                         <a class="dropdown-item" href="/login">Login </a>
