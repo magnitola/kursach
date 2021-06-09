@@ -32,6 +32,13 @@ class ErrorMessages:
     not_fount_comment = 'Comment not found!'
 
 
+def can_edit_news(params):
+    user_info = USERS.find_one({'session': params['session']})
+    if not user_info or (user_info['role'] != Roles.admin and user_info['role'] != Roles.editor):
+        return False
+    return True
+
+
 def register(params):
     """
     Регистрация
@@ -88,8 +95,8 @@ def prepare_to_save_post(params):
     post = POSTS.find_one({'title': params['title']})
     if post and not (params.get('id') and post['_id'] == ObjectId(params['id'])):
         return ErrorMessages.exists_title
-    user_info = USERS.find_one({'session': params['session']})
-    if not user_info or (user_info['role'] != Roles.admin and user_info['role'] != Roles.editor):
+    can = can_edit_news(params)
+    if not can:
         return ErrorMessages.rights_create
     created_tags = TAGS.find({'name': {'$in': params['tags']}})
     tags_to_create = set(params['tags']) - set([tag['name'] for tag in created_tags])
@@ -119,7 +126,7 @@ def add_post(params):
         'tags': [tag['_id'] for tag in tags],
         'views': 0,
         'photo': params['photo'],
-        'date': datetime.date.today()
+        'date': datetime.datetime.today()
     }
     inserted_id = POSTS.insert_one(post_object).inserted_id
     request['success'] = True
@@ -217,7 +224,7 @@ def registry_posts(params):
     if params['tags']:
         filter_search.update({'tags': {'$in': [ObjectId(tag) for tag in params['tags']]}})
     if params['date']:
-        date = datetime.datetime.strptime(params['date'], '%d/%m/%Y')
+        date = datetime.datetime.strptime(params['date'], '%m/%d/%Y')
         filter_search.update({'date': datetime.date(date.year, date.month, date.day)})
     if params['search']:
         filter_search.update({'title': {'$regex': params['search']}})
@@ -336,6 +343,15 @@ def delete_comment(params):
     COMMENTS.delete_one({'_id': params['_id']})
     request['success'] = True
     return request
+
+
+def get_user_info(params):
+    """
+    Получить инфо по пользователю
+    :param params: session
+    :return:
+    """
+    return USERS.find_one({'session': params['session']})
 
 
 if __name__ == '__main__':

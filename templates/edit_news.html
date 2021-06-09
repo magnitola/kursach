@@ -53,8 +53,7 @@
                     <div class="mb-4 not-need-file" id="error_file">The picture is loaded, but you can replace it</div>
 
                     <h4 class="mb-2">News Title</h4>
-                    <input class="form-control is-invalid" type="text" placeholder="My news title" id="news_title" required autocomplete="off">
-                    <div class="invalid-feedback" id="error_title">PARASHA, PEREDELIVAY</div>
+                    <input class="form-control" type="text" placeholder="My news title" id="news_title" required autocomplete="off">
                     <div class="mb-4"></div>
 
                     <h4 class="mb-2">News Text</h4>
@@ -88,36 +87,106 @@
 <script src="/static/bootstrap/js/bootstrap.min.js"></script>
 </body>
 <script type="text/javascript">
-let need_photo = false;
+let news = {{ news|tojson|safe }};
 let count_tags = 5;
-let tags = []
+let all_tags = {{ all_tags|tojson|safe }};
+let tags = [];
 
-if (need_photo) {
+if (!news) {
     $('#news_logo').attr('required', '');
     $('#error_file').text('');
+    for (let i = 1; i <= count_tags; i++) {
+        let tag = '';
+        $('.list_tags').append('<li class="list-group-item about tag"><span><input type="text" class="form-control-plaintext tag" value="' + tag + '"></span></li>');
+    }
+}
+else {
+    $('#news_title').val(news.title);
+    $('#news_text').val(news.text);
+    for (let i = 1; i <= count_tags; i++) {
+        let tag = news.tags[i - 1];
+        if (tag === undefined) {
+            tag = '';
+        }
+        $('.list_tags').append('<li class="list-group-item about tag"><span><input type="text" class="form-control-plaintext tag" value="' + tag + '"></span></li>');
+    }
 }
 
 
-show_tags();
-$('#news_logo').next('.custom-file-label').html('test.jpg');
-
 $(document).ready(() => {
-    let availableTags = ["ActionScript"];
     $( ".tag" ).autocomplete({
-      source: availableTags
+      source: all_tags
     });
 
     $("form").submit((event) => {
         event.preventDefault();
-
-        let tags = []
+        tags = [];
         $('.tag').each(function (i, elem) {
             if ($(this).val())
                 tags.push($(this).val());
         });
         if (tags.length) {
-             $('.error').text('');
-            alert(true)
+            $('.error').text('');
+            // id, photo, title, text, session, tags
+            let filename = '';
+            let photo_data = new FormData();
+            photo_data.append('file', document.getElementById('news_logo').files[0]);
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('save_file_route') }}",
+                data: photo_data,
+                //contentType: 'application/json;charset=UTF-8',
+                processData: false,
+                contentType: false,
+                dataType: "json",
+                success: function (request) {
+                    if (request['success']) {
+                        filename = request['filename'];
+
+                        let formData = new FormData();
+                        if (!news)
+                            formData.append('id', JSON.stringify(null));
+                        else
+                            formData.append('id', news._id);
+                        formData.append('title', $('#news_title').val());
+                        formData.append('text', $('#news_text').val());
+                        formData.append('tags', tags);
+                        formData.append('photo', filename)
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ url_for('save_news_route') }}",
+                            data: formData,
+                            //contentType: 'application/json;charset=UTF-8',
+                            processData: false,
+                            contentType: false,
+                            dataType: "json",
+                            success: function (request) {
+                                if (request['success']) {
+                                    window.location.href = "/news/" + request["id"];
+                                }
+                                else {
+                                     $('.error').text(request['messages']);
+                                }
+                            },
+                            error: function (request) {
+                                console.log(request);
+                                alert('Все сломалось!');
+                            }
+                        });
+                    }
+                    else {
+                         $('.error').text(request['messages']);
+                    }
+                },
+                error: function (request) {
+                    console.log(request);
+                    alert('Все сломалось!');
+                }
+            });
+
+
+
+
         }
         else {
             $('.error').text('Please enter at least one tag!');
@@ -125,14 +194,5 @@ $(document).ready(() => {
     });
 
 });
-
-function show_tags() {
-    for (let i = 1; i <= count_tags; i++) {
-        let tag = tags[i - 1];
-        if (tag === undefined)
-            tag = '';
-        $('.list_tags').append('<li class="list-group-item about" id="li' + i + '"><span><input type="text" class="form-control-plaintext tag" value="' + tag + '"></span></li>');
-    }
-}
 </script>
 </html>
