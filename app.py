@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, url_for, render_template, make_response, jsonify
 from werkzeug.utils import secure_filename
-from server import get_user_info, can_edit_news, get_all_tags, read_post, save_post, add_post
+from server import get_user_info, can_edit_news, get_all_tags, read_post, save_post, add_post, get_comments, set_like, is_liked, write_comment
 from bson.objectid import ObjectId
 import datetime
 import json
@@ -37,8 +37,8 @@ def index_route():
     return render_template('index.html')
 
 
-@app.route('/news')
-def news_route():
+@app.route('/news_old')
+def news_old_route():
     return render_template('news.html')
 
 
@@ -64,9 +64,9 @@ def registration_route():
 # ===========================
 
 
-@app.route('/edit_news/<post>')
-@app.route('/edit_news/')
-@app.route('/edit_news')
+@app.route('/edit/<post>')
+@app.route('/edit/')
+@app.route('/edit')
 def edit_news_route(post=None):
     params = {
         'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
@@ -76,7 +76,7 @@ def edit_news_route(post=None):
     if user_info:
         if can_edit_news(params):
             params_to_render = {
-                'news': read_post(params) if post else None,
+                'news': read_post(params, stat=False) if post else None,
                 'all_tags': [tag['name'] for tag in get_all_tags(params)],
                 'is_editor': can_edit_news(params)
             }
@@ -100,7 +100,6 @@ def save_news_route():
     params['tags'] = params['tags'].split(',')
     params['id'] = None if params['id'] == 'null' else params['id']
     params['photo'] = None if params['photo'] == 'null' or params['photo'] == 'undefined' else params['photo']
-    print(params)
     # id, photo, title, text, session, tags
     if params['id']:
         result = save_post(params)
@@ -127,6 +126,46 @@ def save_file_route():
             'filename': None
         }
     return make_response(params)
+
+
+@app.route('/news/<post>')
+def news_route(post=None):
+    params = {
+        'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
+        'id': post
+    }
+    if post:
+        params_to_render = read_post(params)
+        params_to_render['is_editor'] = can_edit_news(params)
+        params_to_render['comments'] = get_comments(params)
+        params_to_render['is_authorized'] = bool(get_user_info(params))
+        params_to_render['is_liked'] = is_liked(params)
+        encode_params(params_to_render)
+        print(params_to_render)
+        return render_template('news.html', **params_to_render)
+    else:
+        return render_template('news.html')
+
+
+@app.route('/like', methods=['POST'])
+def like_route():
+    params = {
+        'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
+    }
+    params.update(dict(request.form))
+    return set_like(params)
+
+
+@app.route('/send_comment', methods=['POST'])
+def send_comment_route():
+    params = {
+        'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
+    }
+    params.update(dict(request.form))
+    result = write_comment(params)
+    result['comments'] = get_comments(params)
+    encode_params(result)
+    return result
 
 
 if __name__ == '__main__':

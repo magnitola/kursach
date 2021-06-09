@@ -156,7 +156,7 @@ def del_post(params):
     return request
 
 
-def read_post(params):
+def read_post(params, stat=True):
     """
     Прочитать пост
     :param params: id
@@ -168,13 +168,17 @@ def read_post(params):
     }
     post = POSTS.find_one({'_id': ObjectId(params['id'])})
     if post:
-        POSTS.update_one({'_id': ObjectId(params['id'])}, {'$set': {'views': post['views'] + 1}})
+        if stat:
+            POSTS.update_one({'_id': ObjectId(params['id'])}, {'$set': {'views': post['views'] + 1}})
         tags = [tag['name'] for tag in TAGS.find({'_id': {'$in': post['tags']}})]
         request['success'] = True
         request.update(post)
-        request['views'] += 1
+        if stat:
+            request['views'] += 1
         request['tags'] = tags
         request['likes'] = LIKES.find({'object': ObjectId(post['_id'])}).count()
+        author = USERS.find_one({'_id': request['author']})
+        request['author'] = f"{author['name']} {author['surname']}"
         return request
     else:
         request['messages'] = ErrorMessages.not_found_post
@@ -256,14 +260,22 @@ def set_like(params):
     }
     user_info = USERS.find_one({'session': params['session']})
     if not user_info:
-        return ErrorMessages.rights_like
+        request['success'] = False
+        return request
     param_to_search = {'user': user_info['_id'], 'object': ObjectId(params['id'])}
-    if LIKES.find_one(param_to_search):
+    if is_liked(params):
         LIKES.delete_one(param_to_search)
     else:
         LIKES.insert_one(param_to_search)
     request['success'] = True
     return request
+
+
+def is_liked(params):
+    user_info = USERS.find_one({'session': params['session']})
+    if user_info:
+        return bool(LIKES.find_one({'user': user_info['_id'], 'object': ObjectId(params['id'])}))
+    return False
 
 
 def write_comment(params):
@@ -280,7 +292,7 @@ def write_comment(params):
     if not user_info:
         return ErrorMessages.rights_comment
     allowed = user_info['role'] == Roles.admin or user_info['role'] == Roles.editor
-    COMMENTS.insert_one({'object': ObjectId(params['id']), 'author': user_info['_id'], 'is_allowed': allowed, 'date': datetime.datetime.now()})
+    COMMENTS.insert_one({'object': ObjectId(params['id']), 'author': user_info['_id'], 'is_allowed': allowed, 'date': datetime.datetime.now(), 'text': params['text']})
     request['success'] = True
     return request
 
@@ -292,13 +304,20 @@ def get_comments(params):
     :return:
     """
     user_info = USERS.find_one({'session': params['session']})
-    show_hidden = user_info['role'] == Roles.admin or user_info['role'] == Roles.editor
+    show_hidden = (user_info['role'] == Roles.admin or user_info['role'] == Roles.editor) if user_info else False
     filter_to_search = {
         'object': ObjectId(params['id'])
     }
     if not show_hidden:
-        filter_to_search['$or'] = [{'is_allowed': True}, {'author': user_info['_id']}]
-    return list(COMMENTS.find(filter_to_search).sort('date'))
+        filter_to_search['$or'] = [{'is_allowed': True}]
+        if user_info:
+            filter_to_search['$or'].append({'author': user_info['_id']})
+    comments = list(COMMENTS.find(filter_to_search).sort('date', DESCENDING))
+    for comment in comments:
+        author = USERS.find_one({'_id': comment['author']})
+        comment['author'] = f"{author['name']} {author['surname']}"
+        comment['date'] = comment['date'].strftime('%B %d, %Y @ %H:%M')
+    return comments
 
 
 def allow_comment(params):
@@ -356,40 +375,4 @@ def get_user_info(params):
 
 if __name__ == '__main__':
     session = uuid.UUID('5e928523-9ed3-40eb-b800-fd7390bc2ea5')
-    # params_to_test = {
-    #     'login': 'noordan',
-    #     'password': '123456',
-    #     'name': 'Nikita',
-    #     'surname': 'Lukyanov',
-    #     'email': 'mail@mail.ru'
-    # }
-    # print(register(params_to_test))
-    # print(login(params_to_test))
-    params_to_test = {
-        'id': '60be2525e3b9049d8df89b49',
-        'photo': 'test.jpg',
-        'title': 'Проверка заголовка!',
-        'text': 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printtook a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic.',
-        'author': '60be0ff91ef3544110eefc93',
-        'tags': ['Web programming', 'Java Script', 'Node JS'],
-        'session': session
-    }
-    # print(add_post(params_to_test))
-    # print(USERS.find_one({'login': 'noordan'}))
-    # print(POSTS.find_one({'_id': ObjectId('60be1f90790b20914fedb1b3')}))
-    # params_to_test2 = {
-    #     'id': '60be1f90790b20914fedb1b3',
-    #     'session': session
-    # }
-    # print(del_post(params_to_test2))
-    # params_to_test2 = {
-    #     'id': '60be2525e3b9049d8df89b49'
-    # } #limit, sort, tags, page
-    params_to_registry = {
-        'limit': 5,
-        'sort': 'views',
-        'tags': ['60be1f90790b20914fedb1b0'],
-        'page': 1
-    }
-    from pprint import pprint
-    pprint(registry_posts(params_to_registry))
+    print(get_comments({'id': '60c055d0a566bd9944e161bb', 'session': session}))

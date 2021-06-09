@@ -50,21 +50,12 @@
             <!-- Start Service Content Section -->
             <div class="service-content-section">
                 <div class="content-hero-image">
-                    <img class="content-hero-image" src="/static/main/img/intro-bg.jpg" alt="">
+                    <img class="content-hero-image" src="/static/loaded/{{ photo }}" alt="">
                 </div>
                 <!-- Start Section Content -->
                 <div class="default-content-style pos-relative">
-                    <h2 class="news_title">UI design can make easy your complex product.</h2>
-                    <p class="news_text">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                        Lorem Ipsum
-                        has been the industry's standard dummy text ever since the 1500s, when an unknown print
-                        took a galley of type and scrambled it to make a type specimen book. It has survived not
-                        only five centuries, but also the leap into electronic.
-
-                    <p class="news_text">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                        Lorem Ipsum
-                        has been the industry's standard dummy text ever since the 1500s, when an unknown print
-                        took a galley of type and scrambled electronic.</p>
+                    <h2 class="news_title">{{ title }}</h2>
+                    <p class="news_text">{{ text }}</p>
 
 
                 </div>
@@ -78,37 +69,26 @@
                         <form id="form" enctype="multipart/form-data">
                             <div class="row mb-2">
                                 <div class="col d-flex flex-row-reverse">
-                                    <!-- <button class="btn btn-outline-primary" type="submit">Send</button> -->
+                                    {% if is_authorized %}
+                                        <h6 class="error"></h6>
+                                        <button class="btn btn-outline-primary" type="submit">Send</button>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="row justify-content-center mb-2">
                                 <div class="col-md-2 offset-md-0 col-2"><img src="/static/logo.png"></div>
-                                <!-- <textarea id="comment" class="form-control" minlength="3" maxlength="200" autocomplete="off" required></textarea> -->
-                                <div class="col-md-10 col-10" style="color: black"><a href="/login">Log in</a> to leave a comment</div>
+                                <div class="col-md-10 col-10" style="color: black">
+                                    {% if is_authorized %}
+                                    <textarea id="comment" class="form-control" minlength="3" maxlength="200" autocomplete="off" required></textarea>
+                                    {% else %}
+                                    <a href="/login">Log in</a> to leave a comment
+                                    {% endif %}
+                                </div>
                                 <div class="col mt-4">
-                                    <ul class="list-group">
+                                    <ul class="list-group comments">
                                         <!-- КОММЕНТАРИЙ -->
-                                        <li class="list-group-item">
-                                            <div class="d-flex media">
-                                                <div></div>
-                                                <div class="media-body">
-                                                    <div class="d-flex media" style="overflow:visible;">
-                                                        <div class="col-1"><img style="width: 25px; height:25px;" src="/static/logo.png"></div>
-                                                        <div style="overflow:visible;" class="col">
-                                                            <div class="row">
-                                                                <div class="col">
-                                                                    <p><a href="#">Brennan Prill:</a> This guy has been going 100+ MPH on side streets. ASJ SAhfkjashfa ASHFkjahsflkh<br>
-                                                                        <small class="text-muted">August 6, 2016 @ 10:35am </small>
-                                                                        <br><small class="text-muted">Waiting for moderation...</small>
-                                                                    </p>
-                                                                    <a href="#">Delete</a> <a href="#">Publish</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
+
+
                                         <!-- КОНЕЦ КОММЕНТАРИЯ -->
                                     </ul>
                                 </div>
@@ -127,9 +107,9 @@
                         <div class="col">
                             <p class="title">About</p>
                             <ul class="list-group">
-                                <li class="list-group-item about"><span>Author: Alex Brody</span></li>
-                                <li class="list-group-item about"><span>Views: 5552</span></li>
-                                <li class="list-group-item about"><span>Likes: 224</span></li>
+                                <li class="list-group-item about"><span>Author: {{ author }}</span></li>
+                                <li class="list-group-item about"><span>Views: {{ views }}</span></li>
+                                <li class="list-group-item about"><span>Likes: {{ likes }}</span></li>
                             </ul>
                         </div>
                     </div>
@@ -141,42 +121,103 @@
                         <div class="col">
                             <p class="title">Tags</p>
                             <ul class="list-group">
-                                <li class="list-group-item about about-passive"><span>Web programming</span></li>
-                                <li class="list-group-item about about-passive"><span>Java Script</span></li>
-                                <li class="list-group-item about about-passive"><span>Node JS</span></li>
+                                {% for tag in tags %}
+                                <li class="list-group-item about"><span>{{ tag }}</span></li>
+                                {% endfor %}
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
-             <div class="row">
+             {% if is_authorized %}
+            <div class="row">
                 <div class="col params">
                     <div class="row">
                         <div class="col">
                             <p class="title">Tools</p>
                             <ul class="list-group">
                                 <li class="list-group-item" id="like"><span>Like</span></li>
-                                <li class="list-group-item about-passive"><span>Edit</span></li>
-                                <li class="list-group-item about-passive"><span>Delete</span></li>
+                                {% if is_editor %}
+                                <li class="list-group-item about-passive" id="edit"><span>Edit</span></li>
+                                <li class="list-group-item about-passive" id="delete"><span>Delete</span></li>
+                                {% endif %}
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
 <script src="/static/bootstrap/js/bootstrap.min.js"></script>
 </body>
 <script type="text/javascript">
-let is_liked = false;
+let is_liked = {{ is_liked|tojson|safe }};
+let is_editor = {{ is_editor|tojson|safe }};
+let comments = {{ comments|tojson|safe }};
 
+load_comments();
 set_like();
 
 $(document).ready(() => {
     $('#like').click(function () {
-        is_liked = !is_liked;
-        set_like();
+        let formData = new FormData();
+        formData.append('id', "{{ _id }}");
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('like_route') }}",
+            data: formData,
+            //contentType: 'application/json;charset=UTF-8',
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: function (request) {
+                if (request['success']) {
+                    is_liked = !is_liked;
+                    set_like();
+                }
+            },
+            error: function (request) {
+                console.log(request);
+                alert('Все сломалось!');
+            }
+        });
+
+    });
+
+    $('#edit').click(function () {
+       window.location.href = "/edit/" + "{{ _id }}";
+    });
+
+    $("form").submit((event) => {
+        event.preventDefault();
+        let formData = new FormData();
+        formData.append('id', "{{ _id }}");
+        formData.append('text', $('#comment').val());
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('send_comment_route') }}",
+            data: formData,
+            //contentType: 'application/json;charset=UTF-8',
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: function (request) {
+                if (request['success']) {
+                    comments = request['comments'];
+                    load_comments();
+                }
+                else {
+                    $('.error').text(request['messages']);
+                }
+
+            },
+            error: function (request) {
+                console.log(request);
+                alert('Все сломалось!');
+            }
+        });
     });
 
 
@@ -194,6 +235,33 @@ function set_like() {
         elem.text('Like');
         elem.removeClass('about-active');
         elem.addClass('about-passive');
+    }
+}
+
+function load_comments() {
+    let elem = $('.comments');
+    elem.empty();
+    for (let i = 0; i < comments.length; i++) {
+        $('.comments').append(`<li class="list-group-item" id="`+ comments[i]._id +`">
+                        <div class="d-flex media">
+                            <div class="media-body">
+                                <div class="d-flex media" style="overflow:visible;">
+                                    <div class="mr-3"><img style="width: 25px; height:25px;" src="/static/logo.png"></div>
+                                    <div style="overflow:visible;" class="col">
+                                        <div class="row">
+                                            <div class="col">
+                                                <p><a href="#">`+ comments[i].author +`:</a> `+ comments[i].text +`<br>
+                                                    <small class="text-muted">`+ comments[i].date +` </small>
+                                                    `+ (comments[i].is_allowed ? "" : '<br><small class="text-muted">Waiting for moderation...</small>')+`
+                                                </p>
+                                                    `+ (is_editor ? '<a href="#" data-comment="'+ comments[i]._id +'">Delete</a>' : '' + !comments[i].is_allowed && is_editor ? '<a href="#" data-comment="'+ comments[i]._id +'">Publish</a>' : '') + `
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>`);
     }
 }
 </script>
