@@ -34,6 +34,11 @@ def encode_params(params):
         params[key] = json.loads(params[key])
 
 
+@app.route('/')
+def main_route():
+    return render_template('index.html')
+
+
 @app.route('/users')
 def index_route():
     # get_all_users
