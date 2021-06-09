@@ -144,7 +144,8 @@ def del_post(params):
         'success': False,
         'messages': ''
     }
-    if not POSTS.find_one({'_id': ObjectId(params['id'])}):
+    post = POSTS.find_one({'_id': ObjectId(params['id'])})
+    if not post:
         request['messages'] = ErrorMessages.not_found_post
         return request
     user_info = USERS.find_one({'session': params['session']})
@@ -153,6 +154,10 @@ def del_post(params):
         return request
     POSTS.delete_one({'_id': ObjectId(params['id'])})
     request['success'] = True
+    for tag in post['tags']:
+        if POSTS.find({'tags': tag}):
+            TAGS.delete_one({'_id': tag})
+
     return request
 
 
@@ -228,15 +233,20 @@ def registry_posts(params):
     if params['tags']:
         filter_search.update({'tags': {'$in': [ObjectId(tag) for tag in params['tags']]}})
     if params['date']:
-        date = datetime.datetime.strptime(params['date'], '%m/%d/%Y')
-        filter_search.update({'date': datetime.date(date.year, date.month, date.day)})
+        try:
+            date = datetime.datetime.strptime(params['date'], '%m/%d/%Y')
+            filter_search.update({'date': {'$gte': date, '$lt': date + datetime.timedelta(hours=23, minutes=59)}})
+        except Exception:
+            pass
     if params['search']:
         filter_search.update({'title': {'$regex': params['search']}})
-    posts = list(POSTS.find(filter_search).sort(params['sort']).skip((params['page'] - 1) * params['limit']).limit(params['limit']))
+    posts = list(POSTS.find(filter_search).sort(params['sort'], DESCENDING).skip((params['page'] - 1) * params['limit']).limit(params['limit']))
     for post in posts:
         post['text'] = post['text'][:120] + '...'
         post['tags'] = [tag['name'] for tag in TAGS.find({'_id': {'$in': post['tags']}})]
-    return posts
+        post['date'] = post['date'].strftime('%B %d, %Y @ %H:%M')
+    count = POSTS.find(filter_search).count()
+    return {'posts': posts, 'count': count}
 
 
 def get_all_tags(params):

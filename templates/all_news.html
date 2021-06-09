@@ -68,8 +68,8 @@
                         <div class="col">
                             <p class="title">Filters</p>
                             <ul class="list-group">
-                                <li class="list-group-item about"><span><input class="form-control" data-date-format="dd/mm/yyyy" id="datepicker" readonly style="width: 100%;"></span></li>
-                                <li class="list-group-item about"><span><input class="form-control" id="exampleInputEmail1" placeholder="Search" style="width: 100%;"></span></li>
+                                <li class="list-group-item about"><span><input class="form-control" data-date-format="dd/mm/yyyy" id="datepicker" style="width: 100%;"></span></li>
+                                <li class="list-group-item about"><span><input class="form-control" id="search" placeholder="Search" style="width: 100%;" autocomplete="off"></span></li>
                                 <li class="list-group-item sort about-active" id="views"><span>Sort by views</span></li>
                                 <li class="list-group-item sort about-passive" id="date"><span>Sort by time</span></li>
                                 <li class="list-group-item sort about-passive" id="likes"><span>Sort by likes</span></li>
@@ -84,9 +84,9 @@
                         <div class="col">
                             <p class="title">Tags</p>
                             <ul class="list-group">
-                                <li class="list-group-item tags about-passive" id="web"><span>Web programming</span></li>
-                                <li class="list-group-item tags about-passive" id="js"><span>Java Script</span></li>
-                                <li class="list-group-item tags about-passive" id="njs"><span>Node JS</span></li>
+                                {% for tag in tags %}
+                                <li class="list-group-item tags about-passive" id="{{ tag._id }}"><span>{{ tag.name }}</span></li>
+                                {% endfor %}
                             </ul>
                         </div>
                     </div>
@@ -101,91 +101,15 @@
 <script type="text/javascript">
 let current_page = 1;
 let count_posts_on_page = 3;
-let posts = [{
-    tags: ['Web programming', 'Java Script'],
-    title: 'Мое название поста!',
-    date: '15 Декабря',
-    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
-    id: '12345'
-},
-{
-    tags: ['Web programming', 'Java Script'],
-    title: 'Мое название поста!',
-    date: '14 Декабря',
-    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
-    id: '12345'
-},
-{
-    tags: ['Web programming', 'Java Script'],
-    title: 'Мое название поста!',
-    date: '13 Декабря',
-    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
-    id: '12345'
-},{
-    tags: ['Web programming', 'Java Script'],
-    title: 'Мое название поста!',
-    date: '12 Декабря',
-    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
-    id: '12345'
-},
-{
-    tags: ['Web programming', 'Java Script'],
-    title: 'Мое название поста!',
-    date: '11 Декабря',
-    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
-    id: '12345'
-},
-{
-    tags: ['Web programming', 'Java Script'],
-    title: 'Мое название поста!',
-    date: '10 Декабря',
-    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
-    id: '12345'
-},
-{
-    tags: ['Web programming', 'Java Script'],
-    title: 'Мое название поста!',
-    date: '9 Декабря',
-    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
-    id: '12345'
-},
-{
-    tags: ['Web programming', 'Java Script'],
-    title: 'Мое название поста!',
-    date: '8 Декабря',
-    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
-    id: '12345'
-},
-{
-    tags: ['Web programming', 'Java Script'],
-    title: 'Мое название поста!',
-    date: '7 Декабря',
-    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
-    id: '12345'
-},
-{
-    tags: ['Web programming', 'Java Script'],
-    title: 'Мое название поста!',
-    date: '6 Декабря',
-    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
-    id: '12345'
-},
-{
-    tags: ['Web programming', 'Java Script'],
-    title: 'Мое название поста!',
-    date: '5 Декабря',
-    text: 'Это более широкая карточка с вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту',
-    id: '12345'
-}]
-let count_all_posts = posts.length;
+let posts = [];
+let count_all_posts = 0;
 let sort = 'views';
 let tags = [];
-let max_page = Math.ceil(count_all_posts / count_posts_on_page);
 
 show_news();
-show_pagination();
 
 $(document).ready(() => {
+    show_pagination();
     $('#datepicker').datepicker({
         weekStart: 1,
         daysOfWeekHighlighted: "6,0",
@@ -193,6 +117,13 @@ $(document).ready(() => {
         todayHighlight: true,
     });
     $('#datepicker').datepicker("setDate", new Date());
+
+    $('#datepicker').change(function () {
+       show_news();
+    });
+    $('#search').change(function () {
+       show_news();
+    });
 
     // Скрипт обработки нажатий на сортировку
     $('.sort').click(function () {
@@ -208,6 +139,7 @@ $(document).ready(() => {
                 $(this).removeClass('about-active');
             }
         });
+        show_news();
     });
 
     // Скрипт обработки нажатий на теги
@@ -223,10 +155,11 @@ $(document).ready(() => {
             let this_tag = $(this).attr('id');
             tags.splice(tags.indexOf(this_tag), 1);
         }
+        show_news();
     });
 
     // Обработка пагинации
-    $('.page-item').click(function () {
+    $('.pagination').on('click', '.page-item', function () {
         let elem = $(this);
         current_page = Number(elem.text());
         if (!elem.hasClass('active')) {
@@ -241,12 +174,12 @@ $(document).ready(() => {
             }
             else if (elem.attr('id') === 'pagin_right') {
                 $('#pagin_right').addClass('active');
-                current_page = max_page;
+                current_page = Math.ceil(count_all_posts / count_posts_on_page);
                 if (current_page === 2)
                     $('#pagin_second').addClass('active');
                 else
                     $('#pagin_third').addClass('active');
-                if (max_page > 3)
+                if (Math.ceil(count_all_posts / count_posts_on_page) > 3)
                     set_text_pagin(current_page - 2, current_page - 1, current_page);
             }
             else
@@ -255,7 +188,7 @@ $(document).ready(() => {
                 $('#pagin_first').addClass('active');
             }
             else {
-                if (current_page === max_page) {
+                if (current_page === Math.ceil(count_all_posts / count_posts_on_page)) {
                     $('#pagin_right').addClass('active');
                     if (current_page === 2)
                         $('#pagin_second').addClass('active');
@@ -266,7 +199,7 @@ $(document).ready(() => {
                     set_text_pagin(current_page - 1, current_page, current_page + 1);
                 }
             }
-            show_news();
+            show_news(false);
 
         }
     });
@@ -283,37 +216,56 @@ function show_pagination() {
     pagin.empty();
     pagin.append('<li class="page-item active" id="pagin_left"><a class="page-link" tabindex="-1">First</a></li>');
     pagin.append('<li class="page-item active" id="pagin_first"><a class="page-link">1</a></li>');
-    if (max_page >= 2)
+    if (Math.ceil(count_all_posts / count_posts_on_page) >= 2)
         pagin.append('<li class="page-item" id="pagin_second"><a class="page-link">2</a></li>');
-    if (max_page >= 3)
+    if (Math.ceil(count_all_posts / count_posts_on_page) >= 3)
         pagin.append('<li class="page-item" id="pagin_third"><a class="page-link">3</a></li>');
     pagin.append('<li class="page-item" id="pagin_right"><a class="page-link">Last</a></li>');
-    if (max_page === 1)
+    if (Math.ceil(count_all_posts / count_posts_on_page) === 1 || Math.ceil(count_all_posts / count_posts_on_page) === 0)
         $('#pagin_right').addClass('active');
 }
 
-function show_news() {
-    let elem = $('#news');
-    elem.empty();
-    for (let i = (current_page - 1) * count_posts_on_page; i < count_posts_on_page * current_page && i < count_all_posts; i++) {
-        elem.append(`<div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                    <div class="col p-4 d-flex flex-column position-static">
-                        <strong class="d-inline-block mb-2 text-primary">` + posts[i].tags.join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;') + `</strong>
-                        <h3 class="mb-0">` + posts[i].title + `</h3>
-                        <div class="mb-1 text-muted">` + posts[i].date + `</div>
-                        <p class="card-text mb-auto">` + posts[i].text + `</p>
-                        <a href="/news/`+ posts[i].id +`" class="stretched-link">Продолжить чтение</a>
-                    </div>
-                    <div class="col-auto d-none d-lg-block">
-                        <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
-                             role="img" aria-label="Placeholder: Эскиз" preserveAspectRatio="xMidYMid slice"
-                             focusable="false"><title>Placeholder</title>
-                            <rect width="100%" height="100%" fill="#55595c"></rect>
-                        </svg>
+function show_news(pagin=true) {
+    let formData = new FormData();
+    formData.append('limit', count_posts_on_page);
+    formData.append('sort', sort);
+    formData.append('tags', tags);
+    formData.append('page', current_page);
+    formData.append('date', $('#datepicker').val());
+    formData.append('search', $('#search').val());
+    $.ajax({
+        type: "POST",
+        url: "{{ url_for('news_registry_route') }}",
+        data: formData,
+        //contentType: 'application/json;charset=UTF-8',
+        processData: false,
+        contentType: false,
+        dataType: "json",
+        success: function (request) {
+            posts = request.posts;
+            count_all_posts = request.count
+            let elem = $('#news');
+            elem.empty();
+            for (let i = 0; i < posts.length; i++) {
+                elem.append(`<div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                            <div class="col p-4 d-flex flex-column position-static">
+                                <strong class="d-inline-block mb-2 text-primary">` + posts[i].tags.join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;') + `</strong>
+                                <h3 class="mb-0">` + posts[i].title + `</h3>
+                                <div class="mb-1 text-muted">` + posts[i].date + `</div>
+                                <p class="card-text mb-auto">` + posts[i].text + `</p>
+                                <a href="/news/`+ posts[i]._id +`" class="stretched-link">Продолжить чтение</a>
+                            </div>
+                        </div>`)
+            }
+            if (pagin)
+                show_pagination();
+        },
+        error: function (request) {
+            console.log(request);
+            alert('Все сломалось!');
+        }
+    });
 
-                    </div>
-                </div>`)
-    }
 }
 </script>
 </html>

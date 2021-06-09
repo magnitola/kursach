@@ -1,7 +1,7 @@
 from flask import Flask, request, redirect, url_for, render_template, make_response, jsonify
 from werkzeug.utils import secure_filename
 from server import (get_user_info, can_edit_news, get_all_tags, read_post, save_post, add_post, get_comments, set_like,
-                    is_liked, write_comment, login, delete_comment, del_post)
+                    is_liked, write_comment, login, delete_comment, del_post, registry_posts, get_all_tags)
 from bson.objectid import ObjectId
 import datetime
 import json
@@ -41,11 +41,6 @@ def index_route():
 @app.route('/news_old')
 def news_old_route():
     return render_template('news.html')
-
-
-@app.route('/all_news')
-def all_news_route():
-    return render_template('all_news.html')
 
 
 @app.route('/edit_news_old')
@@ -214,6 +209,34 @@ def delete_route():
     result = del_post(params)
     encode_params(result)
     return make_response(result)
+
+
+@app.route('/news_registry', methods=['POST'])
+def news_registry_route():
+    params = {
+        'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
+    }
+    params.update(dict(request.form))
+    params['limit'] = int(params['limit'])
+    params['tags'] = [tag for tag in params['tags'].split(',') if tag]
+    params['page'] = int(params['page'])
+    print(params)
+    result = registry_posts(params)
+    encode_params(result)
+    return make_response(result)
+
+
+@app.route('/news/')
+@app.route('/news')
+def all_news_route():
+    params = {
+        'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
+        'tags': get_all_tags({})
+    }
+    params['is_authorized'] = bool(get_user_info(params))
+    params['is_editor'] = can_edit_news(params)
+    encode_params(params)
+    return render_template('all_news.html', **params)
 
 
 if __name__ == '__main__':
