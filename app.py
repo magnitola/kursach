@@ -11,6 +11,7 @@ import os
 
 
 UPLOAD_FOLDER = './static/loaded'
+ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -125,13 +126,14 @@ def save_news_route():
 def save_file_route():
     if request.files.getlist('file'):
         file = request.files.getlist('file')[0]
+        if os.path.splitext(file.filename)[1] not in ALLOWED_EXTENSIONS:
+            return make_response({'success': False, 'messages': 'Invalid file!'})
         filename = str(uuid.uuid4()) + os.path.splitext(file.filename)[1]
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         params = {
             'success': True,
             'filename': filename
         }
-        print(params)
     else:
         params = {
             'success': True,
