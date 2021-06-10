@@ -26,6 +26,7 @@ class ErrorMessages:
     rights_create = 'Insufficient rights to create news!'
     not_found_post = 'Post not found!'
     rights_delete = 'Insufficient rights to delete news!'
+    rights_delete_comment = 'Insufficient rights to delete comment!'
     rights_like = 'Insufficient rights to set like!'
     rights_comment = 'Insufficient rights to leave a comment!'
     rights_allow = 'Insufficient rights to allow comment!'
@@ -271,6 +272,7 @@ def set_like(params):
     user_info = USERS.find_one({'session': params['session']})
     if not user_info:
         request['success'] = False
+        request['messages'] = ErrorMessages.rights_like
         return request
     param_to_search = {'user': user_info['_id'], 'object': ObjectId(params['id'])}
     if is_liked(params):
@@ -341,7 +343,7 @@ def allow_comment(params):
         'messages': ''
     }
     user_info = USERS.find_one({'session': params['session']})
-    if not (user_info['role'] == Roles.admin or user_info['role'] == Roles.editor):
+    if not user_info or not (user_info['role'] == Roles.admin or user_info['role'] == Roles.editor):
         request['messages'] = ErrorMessages.rights_allow
         return request
     if not COMMENTS.find_one({'_id': ObjectId(params['id'])}):
@@ -363,8 +365,8 @@ def delete_comment(params):
         'messages': ''
     }
     user_info = USERS.find_one({'session': params['session']})
-    if not (user_info['role'] == Roles.admin or user_info['role'] == Roles.editor):
-        request['messages'] = ErrorMessages.rights_allow
+    if not user_info or not (user_info['role'] == Roles.admin or user_info['role'] == Roles.editor):
+        request['messages'] = ErrorMessages.rights_delete_comment
         return request
     if not COMMENTS.find_one({'_id': ObjectId(params['id'])}):
         request['messages'] = ErrorMessages.not_fount_comment

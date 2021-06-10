@@ -54,6 +54,9 @@
 <div class="container mt-3">
     <div class="row flex-lg-row flex-column justify-content-center">
         <div class="col col-lg-8 m-2">
+            <div id="alerts">
+
+            </div>
             <!-- Start Service Content Section -->
             <div class="service-content-section">
                 <div class="content-hero-image">
@@ -184,6 +187,9 @@ $(document).ready(() => {
                     is_liked = !is_liked;
                     set_like();
                 }
+                else {
+                    make_error(request['messages']);
+                }
             },
             error: function (request) {
                 console.log(request);
@@ -213,7 +219,7 @@ $(document).ready(() => {
                     window.location.replace("/news");
                 }
                 else {
-                    $('.error').text(request['messages']);
+                    make_error(request['messages']);
                 }
 
             },
@@ -244,7 +250,7 @@ $(document).ready(() => {
                     $('#comment').val('');
                 }
                 else {
-                    $('.error').text(request['messages']);
+                    make_error(request['messages']);
                 }
 
             },
@@ -273,7 +279,7 @@ $(document).ready(() => {
                     load_comments();
                 }
                 else {
-                    $('.error').text(request['messages']);
+                    make_error(request['messages']);
                 }
 
             },
@@ -302,7 +308,7 @@ $(document).ready(() => {
                     load_comments();
                 }
                 else {
-                    $('.error').text(request['messages']);
+                    make_error(request['messages']);
                 }
 
             },
@@ -355,6 +361,13 @@ function load_comments() {
                         </div>
                     </li>`);
     }
+}
+
+function make_error(str) {
+    $('#alerts').append(`<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  <strong>ERROR!</strong> `+ str +`
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`)
 }
 </script>
 </html>

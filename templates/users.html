@@ -44,6 +44,9 @@
 </nav>
 <div class="container mt-3">
     <div class="row flex-lg-row flex-column justify-content-center">
+        <div id="alerts">
+
+        </div>
         <table class="table table-dark">
           <thead>
             <tr>
@@ -97,6 +100,9 @@ $(document).ready(() => {
             contentType: false,
             dataType: "json",
             success: function (request) {
+                if (!request['success']) {
+                    make_error('Not enough rights!')
+                }
 
             },
             error: function (request) {
@@ -106,5 +112,12 @@ $(document).ready(() => {
         });
     });
 });
+
+function make_error(str) {
+    $('#alerts').append(`<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  <strong>ERROR!</strong> `+ str +`
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`)
+}
 </script>
 </html>

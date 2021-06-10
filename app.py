@@ -65,11 +65,13 @@ def index_route():
 def change_role_route():
     params = {
         'session': uuid.UUID(request.cookies.get('session')) if request.cookies.get('session') else '',
+        'success': False
     }
     params.update(dict(request.form))
     user_info = get_user_info(params)
     if user_info and user_info['role'] == 'admin':
         change_role(params)
+        params['success'] = True
     return make_response(params)
 
 
