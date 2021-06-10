@@ -77,7 +77,7 @@
                         <div class="col">
                             <p class="title">Filters</p>
                             <ul class="list-group">
-                                <li class="list-group-item about"><span><input class="form-control" data-date-format="dd/mm/yyyy" id="datepicker" style="width: 100%;"></span></li>
+                                <li class="list-group-item about"><span><input class="form-control" data-date-format="dd/mm/yyyy" id="datepicker" style="width: 100%;" placeholder="Date"></span></li>
                                 <li class="list-group-item about"><span><input class="form-control" id="search" placeholder="Search" style="width: 100%;" autocomplete="off"></span></li>
                                 <li class="list-group-item sort about-active" id="views"><span>Sort by views</span></li>
                                 <li class="list-group-item sort about-passive" id="date"><span>Sort by time</span></li>
@@ -125,7 +125,7 @@ $(document).ready(() => {
         autoclose: true,
         todayHighlight: true,
     });
-    $('#datepicker').datepicker("setDate", new Date());
+    // $('#datepicker').datepicker("setDate", new Date());
 
     $('#datepicker').change(function () {
        show_news();
